@@ -889,13 +889,13 @@ function guideT(){ const ko=lang==="ko"; return {
   reset:ko?"처음부터":"Start over",
   pick:ko?"어떤 주제가 궁금하세요?":"Which topic?",
   all:ko?"전체 주제 보기":"Browse all topics",
-  allN:n=>ko?`주제 ${n}개 · 2026년 제주경마 시행계획 기준`:`${n} topics · from the 2026 Jeju Racing Plan`,
+  allN:n=>ko?`주제 ${n}개 · 2026년 제주경마 시행계획과 공개 자료 기준`:`${n} topics · from the 2026 Jeju Racing Plan and public sources`,
   src:ko?"출처":"Source",
   note:ko?"말마는 AI가 아닙니다. 답은 시행계획과 공공데이터에서 미리 정리한 내용이며, 세부 규정은 바뀔 수 있습니다.":"Malma is not AI. Answers are written in advance from the Racing Plan and public data, and rules can change.",
   you:ko?"나":"You", guide:ko?"말마":"Malma",
   gloss:ko?"용어 풀이":"Glossary"
 };}
-const srcL=x=>lang==="ko"?x.replace("2026 Jeju Racing Plan","2026년 제주경마 시행계획").replace("KRA horse data (breed code)","한국마사회 마필정보(마종 코드)").replace("KRA daily workout data","한국마사회 일일 조교 데이터").replace("KRA track reports","한국마사회 주로 상태 발표").replace(/pp?\./,"p."):x;
+const srcL=x=>lang==="ko"?x.replace("2026 Jeju Racing Plan","2026년 제주경마 시행계획").replace("KRA horse data (breed code)","한국마사회 마필정보(마종 코드)").replace("Wikipedia (Jeju pony); Seoul Shinmun, 1 Oct 2026","위키백과 '제주마', 서울신문 2026.10.1").replace("KRA daily workout data","한국마사회 일일 조교 데이터").replace("KRA track reports","한국마사회 주로 상태 발표").replace(/pp?\./,"p."):x;
 function chip(label,attrs){ return `<button type="button" class="qchip" ${attrs}>${label}</button>`; }
 function chipsFor(keys,asked){ const i=lang==="ko"?0:1; return keys.filter(k=>!asked.has(k)).map(k=>chip(gById(k).q[i],`data-ask="${k}"`)).join(""); }
 function render101(){ const t=T[lang], g=guideT(), i=lang==="ko"?0:1;
@@ -1600,7 +1600,11 @@ const GUIDE=[
  {k:"horses",g:"basics",q:["어떤 말이 달리나요?","What kind of horses race?"],t:["경주마: 대부분 제주마","The horses: mostly Jeju ponies"],
   b:["제주경마에서 뛰는 말은 대부분 천연기념물 제주마입니다. 서울·부경의 더러브렛보다 체구가 작아서 경주 기록 수준도 다릅니다. 한국마사회 마필 정보에는 더러브렛, 더러브렛계종, 소형마, 중형마 같은 다른 품종 표시도 일부 나옵니다. 이 페이지의 품종 표시는 한국마사회 마필 정보에서 가져옵니다.",
      "Most horses in Jeju races are the native Jeju pony, a designated natural monument. They are smaller than the Thoroughbreds raced in Seoul and Busan, so race times run at a different level. KRA's horse data also lists a few other breed codes, such as Thoroughbred, Thoroughbred-line (더러브렛계종), small horse and medium horse. The breed label on this site comes from KRA's horse data."],
-  s:"KRA horse data (breed code)",f:["class","distance","welfare"]},
+  s:"KRA horse data (breed code)",f:["pony","class","distance","welfare"]},
+ {k:"pony",g:"basics",q:["제주마는 어떤 말이고 혈통은 어떻게 관리하나요?","What is the Jeju pony and how is its bloodline kept?"],t:["제주마: 기원과 혈통 관리","The Jeju pony: origins and bloodline"],
+  b:["제주마 혈통은 한마디로 <b>13세기 몽골말 계통의 토종 조랑말을 순수하게 보존하려고 엄격하게 등록·관리하는 혈통</b>입니다.<br><br><b>기원</b><br>제주에는 청동기 시대 이전부터 말을 길렀던 흔적이 있습니다. 지금 제주마와 가까운 계통은 13세기 원(몽골)이 들여온 말에서 이어진 것으로 알려져 있습니다. 1276년 몽골 말 160마리를 수산평에 풀어 기른 것이 본격적인 시작이고, 고려 말~조선 초에는 약 2만 마리까지 늘었습니다. 과하마, 토마라고도 부릅니다.<br><br><b>천연기념물 지정</b><br>1986년 천연기념물 제347호로 지정됐습니다. 당시 혈통이 확인된 순종은 64마리뿐이었고, 전체 사육두수는 1,347마리였습니다. 체구는 작아서 체고가 암컷 약 117cm, 수컷 약 115cm입니다.<br><br><b>혈통 관리 방식</b><br>2000년 '제주마 등록관리 규정'을 만들고 2002년부터 등록을 시작했습니다. 등록은 두 종류입니다.<br>· <b>혈통등록마</b>: 부모가 둘 다 등록된 제주마인 말<br>· <b>기초등록마</b>: 조상 혈통은 불분명하지만 외모 심사와 DNA 검사(17개 유전자)로 제주마임이 확인된 말<br>등록된 말은 전자칩을 심어 이력을 관리하고, 부모는 유전자 분석으로 친자관계까지 확인합니다. 현재 등록 제주마는 약 5,282마리이고, 이 중 씨수말로 지정된 말은 97마리 수준입니다(2026년 10월 기사 기준).",
+     "In a phrase, the Jeju pony bloodline is <b>a native pony line descended from 13th-century Mongol horses, strictly registered and managed to keep it pure</b>.<br><br><b>Origins</b><br>Horses were kept on Jeju before the Bronze Age. The line closest to today's Jeju pony is traced to horses brought by the Yuan (Mongol) rulers in the 13th century. In 1276, 160 Mongol horses were released at Susanpyeong, the real start of large-scale breeding, and by the late Goryeo to early Joseon period numbers grew to about 20,000. The pony is also called gwahama or toma.<br><br><b>Natural monument</b><br>It was designated Natural Monument No. 347 in 1986. At the time only 64 purebreds with confirmed pedigrees existed, out of 1,347 horses in total. It is small: about 117 cm at the withers for mares and about 115 cm for stallions.<br><br><b>How the bloodline is managed</b><br>Rules on registering Jeju ponies were set in 2000 and registration began in 2002. There are two kinds:<br>· <b>Pedigree-registered</b>: both parents are registered Jeju ponies<br>· <b>Foundation-registered</b>: ancestry is unclear, but appearance checks and DNA tests (17 genetic markers) confirm it is a Jeju pony<br>Registered horses get a microchip for their records, and parentage is checked by DNA. There are about 5,282 registered Jeju ponies, of which about 97 are designated sires (as reported in October 2026)."],
+  s:"Wikipedia (Jeju pony); Seoul Shinmun, 1 Oct 2026",f:["horses","jeju","welfare"]},
  {k:"calendar",g:"basics",q:["2026년 경주는 언제 있나요?","When does Jeju race in 2026?"],t:["2026년 일정","The 2026 calendar"],
   b:["시즌은 1월 2일(금)~12월 25일(금)이고 12월 26일은 취소 경주를 보전하는 예비경마일입니다. 휴장은 설(2/20~22), 혹서기(7/31~8/2), 추석(9/25~27) 세 번입니다. 월별 경주 수는 1월 65 · 2월 46 · 3월 56 · 4월 56 · 5월 75 · 6월 60 · 7월 60 · 8월 65 · 9월 43 · 10월 77 · 11월 54 · 12월 46입니다. 8월 7일~9월 6일 5주간은 금·토 야간경마로 열렸습니다.",
      "The season runs from Fri 2 Jan to Fri 25 Dec, with 26 Dec held as a reserve day for cancelled races. There are three breaks: Lunar New Year (20–22 Feb), midsummer (31 Jul–2 Aug) and Chuseok (25–27 Sep). Races by month: Jan 65 · Feb 46 · Mar 56 · Apr 56 · May 75 · Jun 60 · Jul 60 · Aug 65 · Sep 43 · Oct 77 · Nov 54 · Dec 46. For five weeks from 7 Aug to 6 Sep the Friday and Saturday meetings were run at night."],
