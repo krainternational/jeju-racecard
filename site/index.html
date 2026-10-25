@@ -80,8 +80,10 @@ section.gloss{display:grid;gap:10px}
 section.gloss h2,section.load h2{font-family:var(--display);font-weight:400;font-size:22px;margin:0}
 .terms{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
 .term{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
-.term b{display:block}
+.term>b{display:block}.term p b{display:inline;color:var(--ink)}
 .term p{margin:2px 0 0;font-size:14px;color:var(--muted)}
+.term.lead{grid-column:1/-1;background:#fff6e8;border-color:#f0d9ae}.term.lead b{font-size:17px;margin-bottom:4px}.term.lead p{font-size:15px;color:var(--ink);line-height:1.65}
+:root[data-theme="dark"] .term.lead{background:#3a2a10;border-color:#5a4220}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .term.lead{background:#3a2a10;border-color:#5a4220}}
 section.load{display:grid;gap:8px}
 section.load p{margin:0;color:var(--muted);font-size:14px;max-width:65ch}
 textarea{width:100%;min-height:110px;font-family:var(--mono);font-size:12px;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--surface);color:var(--ink)}
@@ -761,18 +763,18 @@ function weightLine(r,l){
   return "";
 }
 const TERMS={
- ko:[["등급","레이팅에 따라 나눈 경주 수준. 제1등급이 가장 높고, 숫자가 클수록 아래 단계입니다."],
+ ko:[["제주마 — 이 경마의 핵심","제주마는 13세기 원(몽골)이 들여온 말에서 이어진 한국 토종 조랑말로, 1986년 천연기념물 제347호로 지정됐습니다. 체고가 암 약 117cm, 수 약 115cm로 더러브렛보다 훨씬 작습니다. 한국마사회가 혈통등록과 관리를 체계적으로 해 오고 있으며, 등록은 부모가 모두 등록마인 <b>혈통등록마</b>와 외모 심사·DNA 검사로 확인된 <b>기초등록마</b>로 나뉘고, 전자칩으로 이력을 관리합니다. 제주마가 경주마로 뛰는 곳은 제주경마공원뿐이며, 한국에서 유일한 토종 조랑말 경주입니다. 경마가 있기에 제주마가 길러지고 등록되고 혈통이 이어집니다. 즉 제주경마는 천연기념물을 지키는 보존·증식의 토대이기도 합니다.","lead"],
+     ["등급","레이팅에 따라 나눈 경주 수준. 제1등급이 가장 높고, 숫자가 클수록 아래 단계입니다."],
      ["레이팅 (R)","말의 능력을 숫자로 매긴 점수. R61~80은 레이팅 61~80점 말만 나올 수 있다는 뜻입니다. R0~0은 아직 점수가 없는 신마나 미승리마 대상입니다."],
      ["핸디캡","잘 달리는 말에 더 무거운 부담중량을 주어 실력 차를 줄이는 방식입니다."],
      ["별정","나이, 성별, 수득상금 등 미리 정한 규칙으로 부담중량을 매기는 방식입니다."],
-     ["주로 상태 · 함수율","모래 주로에 물기가 얼마나 있는지를 %로 표시합니다. 물기가 많을수록 주로가 단단해져 기록이 빨라지는 경향이 있습니다."],
-     ["제주마","제주경마에서 뛰는 말은 대부분 천연기념물 제주마입니다. 서울·부경의 더러브렛보다 체구가 작습니다. 한국마사회 마필 정보에는 더러브렛, 더러브렛계종, 소형마, 중형마 같은 다른 품종 표시도 일부 나옵니다."]],
- en:[["Class","Race level set by rating band. Class 1 is the top; higher numbers are lower grades."],
+     ["주로 상태 · 함수율","모래 주로에 물기가 얼마나 있는지를 %로 표시합니다. 물기가 많을수록 주로가 단단해져 기록이 빨라지는 경향이 있습니다."]],
+ en:[["The Jeju pony — the heart of this racing","The Jeju pony is Korea's native pony, descended from horses brought by the Yuan (Mongol) rulers in the 13th century, and was designated Natural Monument No. 347 in 1986. At about 117 cm (mares) and 115 cm (stallions) at the withers it is far smaller than a Thoroughbred. The Korea Racing Authority keeps the stud book: ponies are registered either as <b>pedigree-registered</b> (both parents registered) or <b>foundation-registered</b> (confirmed by inspection and DNA testing), and each carries a microchip. Jeju Racecourse is the only place where the Jeju pony races, and the only native-pony racing in Korea. Racing is what keeps the ponies bred, registered and their bloodlines alive, so Jeju racing is also the base on which a natural monument is preserved and multiplied.","lead"],
+     ["Class","Race level set by rating band. Class 1 is the top; higher numbers are lower grades."],
      ["Rating (R)","A numeric ability score. R61–80 means only horses rated 61 to 80 may enter. R0–0 is for unrated newcomers or maidens."],
      ["Handicap","Better horses carry more weight to even out the field."],
      ["Set weights","Weights assigned by fixed rules such as age, sex, and earnings."],
-     ["Going · moisture","Moisture content of the sand track, in percent. Wetter sand packs firmer and often runs faster."],
-     ["Jeju pony","Most horses in Jeju races are the native Jeju pony, a designated natural monument. They are smaller than the Thoroughbreds raced in Seoul and Busan. KRA's horse data also lists a few other breed codes, such as Thoroughbred, 더러브렛계종, small horse and medium horse."]]
+     ["Going · moisture","Moisture content of the sand track, in percent. Wetter sand packs firmer and often runs faster."]]
 };
 
 const toHorse=a=>({raceNo:a[0],rcptNo:a[1],hrnm:a[2],gndr:a[3],ag:a[4],ratg:a[5],trarNm:a[6],ownerNm:a[7],prds:a[8],c6:a[9],c1y:a[10],career:a[11]});
@@ -937,7 +939,7 @@ function render101(){ const t=T[lang], g=guideT(), i=lang==="ko"?0:1;
   <details class="alltopics"><summary>${g.all} <small>${g.allN(GUIDE.length)}</small></summary>
     ${GUIDE_GROUPS.map(gr=>`<div class="tgroup"><h3>${gr.t[i]}</h3><div class="chips">${GUIDE.filter(c=>c.g===gr.k).map(c=>chip(c.q[i],`data-ask="${c.k}" data-scroll="1"`)).join("")}</div></div>`).join("")}
   </details>
-  <details class="alltopics"><summary>${g.gloss}</summary><div class="terms">${TERMS[lang].map(([a,b])=>`<div class="term"><b>${a}</b><p>${b}</p></div>`).join("")}</div></details>`;
+  <details class="alltopics"><summary>${g.gloss}</summary><div class="terms">${TERMS[lang].map(([a,b,c])=>`<div class="term${c?" "+c:""}"><b>${a}</b><p>${b}</p></div>`).join("")}</div></details>`;
   { const av='<span class="avatar" aria-hidden="true"></span>'; const i0=html.indexOf('<div class="chatlog"'); const li=html.lastIndexOf(av);
     if(li>i0){ html=html.slice(0,li)+MASCOT()+html.slice(li+av.length); const mi=html.lastIndexOf('<div class="msg guide">',li); if(mi>i0) html=html.slice(0,mi)+'<div class="msg guide live">'+html.slice(mi+'<div class="msg guide">'.length); } }
   $("p101").innerHTML=html;
@@ -1602,8 +1604,8 @@ const GUIDE=[
      "Most horses in Jeju races are the native Jeju pony, a designated natural monument. They are smaller than the Thoroughbreds raced in Seoul and Busan, so race times run at a different level. KRA's horse data also lists a few other breed codes, such as Thoroughbred, Thoroughbred-line (더러브렛계종), small horse and medium horse. The breed label on this site comes from KRA's horse data."],
   s:"KRA horse data (breed code)",f:["pony","class","distance","welfare"]},
  {k:"pony",g:"basics",q:["제주마는 어떤 말이고 혈통은 어떻게 관리하나요?","What is the Jeju pony and how is its bloodline kept?"],t:["제주마: 기원과 혈통 관리","The Jeju pony: origins and bloodline"],
-  b:["제주마 혈통은 한마디로 <b>13세기 몽골말 계통의 토종 조랑말을 순수하게 보존하려고 엄격하게 등록·관리하는 혈통</b>입니다.<br><br><b>기원</b><br>제주에는 청동기 시대 이전부터 말을 길렀던 흔적이 있습니다. 지금 제주마와 가까운 계통은 13세기 원(몽골)이 들여온 말에서 이어진 것으로 알려져 있습니다. 1276년 몽골 말 160마리를 수산평에 풀어 기른 것이 본격적인 시작이고, 고려 말~조선 초에는 약 2만 마리까지 늘었습니다. 과하마, 토마라고도 부릅니다.<br><br><b>천연기념물 지정</b><br>1986년 천연기념물 제347호로 지정됐습니다. 당시 혈통이 확인된 순종은 64마리뿐이었고, 전체 사육두수는 1,347마리였습니다. 체구는 작아서 체고가 암컷 약 117cm, 수컷 약 115cm입니다.<br><br><b>혈통 관리 방식</b><br>2000년 '제주마 등록관리 규정'을 만들고 2002년부터 등록을 시작했습니다. 등록은 두 종류입니다.<br>· <b>혈통등록마</b>: 부모가 둘 다 등록된 제주마인 말<br>· <b>기초등록마</b>: 조상 혈통은 불분명하지만 외모 심사와 DNA 검사(17개 유전자)로 제주마임이 확인된 말<br>등록된 말은 전자칩을 심어 이력을 관리하고, 부모는 유전자 분석으로 친자관계까지 확인합니다. 현재 등록 제주마는 약 5,282마리이고, 이 중 씨수말로 지정된 말은 97마리 수준입니다(2026년 10월 기사 기준).",
-     "In a phrase, the Jeju pony bloodline is <b>a native pony line descended from 13th-century Mongol horses, strictly registered and managed to keep it pure</b>.<br><br><b>Origins</b><br>Horses were kept on Jeju before the Bronze Age. The line closest to today's Jeju pony is traced to horses brought by the Yuan (Mongol) rulers in the 13th century. In 1276, 160 Mongol horses were released at Susanpyeong, the real start of large-scale breeding, and by the late Goryeo to early Joseon period numbers grew to about 20,000. The pony is also called gwahama or toma.<br><br><b>Natural monument</b><br>It was designated Natural Monument No. 347 in 1986. At the time only 64 purebreds with confirmed pedigrees existed, out of 1,347 horses in total. It is small: about 117 cm at the withers for mares and about 115 cm for stallions.<br><br><b>How the bloodline is managed</b><br>Rules on registering Jeju ponies were set in 2000 and registration began in 2002. There are two kinds:<br>· <b>Pedigree-registered</b>: both parents are registered Jeju ponies<br>· <b>Foundation-registered</b>: ancestry is unclear, but appearance checks and DNA tests (17 genetic markers) confirm it is a Jeju pony<br>Registered horses get a microchip for their records, and parentage is checked by DNA. There are about 5,282 registered Jeju ponies, of which about 97 are designated sires (as reported in October 2026)."],
+  b:["제주마 혈통은 한마디로 <b>13세기 몽골말 계통의 토종 조랑말을 순수하게 보존하려고 엄격하게 등록·관리하는 혈통</b>입니다.<br><br><b>기원</b><br>제주에는 청동기 시대 이전부터 말을 길렀던 흔적이 있습니다. 지금 제주마와 가까운 계통은 13세기 원(몽골)이 들여온 말에서 이어진 것으로 알려져 있습니다. 1276년 몽골 말 160마리를 수산평에 풀어 기른 것이 본격적인 시작이고, 고려 말~조선 초에는 약 2만 마리까지 늘었습니다. 과하마, 토마라고도 부릅니다.<br><br><b>천연기념물 지정</b><br>1986년 천연기념물 제347호로 지정됐습니다. 당시 혈통이 확인된 순종은 64마리뿐이었고, 전체 사육두수는 1,347마리였습니다. 체구는 작아서 체고가 암컷 약 117cm, 수컷 약 115cm입니다.<br><br><b>혈통 관리 방식</b><br>2000년 '제주마 등록관리 규정'을 만들고 2002년부터 등록을 시작했습니다. 등록은 두 종류입니다.<br>· <b>혈통등록마</b>: 부모가 둘 다 등록된 제주마인 말<br>· <b>기초등록마</b>: 조상 혈통은 불분명하지만 외모 심사와 DNA 검사(17개 유전자)로 제주마임이 확인된 말<br>등록된 말은 전자칩을 심어 이력을 관리하고, 부모는 유전자 분석으로 친자관계까지 확인합니다. 이 혈통등록과 관리는 한국마사회가 체계적으로 해 오고 있습니다. 현재 등록 제주마는 약 5,282마리이고, 이 중 씨수말로 지정된 말은 97마리 수준입니다(2026년 10월 기사 기준).<br><br><b>왜 중요한가</b><br>제주마가 경주마로 뛰는 곳은 제주경마공원뿐이고, 한국에서 유일한 토종 조랑말 경주입니다. 경마가 있기에 제주마가 길러지고 등록되고 혈통이 이어지므로, 제주경마는 천연기념물을 지키는 보존·증식의 토대이기도 합니다.",
+     "In a phrase, the Jeju pony bloodline is <b>a native pony line descended from 13th-century Mongol horses, strictly registered and managed to keep it pure</b>.<br><br><b>Origins</b><br>Horses were kept on Jeju before the Bronze Age. The line closest to today's Jeju pony is traced to horses brought by the Yuan (Mongol) rulers in the 13th century. In 1276, 160 Mongol horses were released at Susanpyeong, the real start of large-scale breeding, and by the late Goryeo to early Joseon period numbers grew to about 20,000. The pony is also called gwahama or toma.<br><br><b>Natural monument</b><br>It was designated Natural Monument No. 347 in 1986. At the time only 64 purebreds with confirmed pedigrees existed, out of 1,347 horses in total. It is small: about 117 cm at the withers for mares and about 115 cm for stallions.<br><br><b>How the bloodline is managed</b><br>Rules on registering Jeju ponies were set in 2000 and registration began in 2002. There are two kinds:<br>· <b>Pedigree-registered</b>: both parents are registered Jeju ponies<br>· <b>Foundation-registered</b>: ancestry is unclear, but appearance checks and DNA tests (17 genetic markers) confirm it is a Jeju pony<br>Registered horses get a microchip for their records, and parentage is checked by DNA. The Korea Racing Authority runs this registration and management systematically. There are about 5,282 registered Jeju ponies, of which about 97 are designated sires (as reported in October 2026).<br><br><b>Why it matters</b><br>Jeju Racecourse is the only place where the Jeju pony races, and the only native-pony racing in Korea. Racing is what keeps the ponies bred, registered and their bloodlines alive, so Jeju racing is also the base on which a natural monument is preserved and multiplied."],
   s:"Wikipedia (Jeju pony); Seoul Shinmun, 1 Oct 2026",f:["horses","jeju","welfare"]},
  {k:"calendar",g:"basics",q:["2026년 경주는 언제 있나요?","When does Jeju race in 2026?"],t:["2026년 일정","The 2026 calendar"],
   b:["시즌은 1월 2일(금)~12월 25일(금)이고 12월 26일은 취소 경주를 보전하는 예비경마일입니다. 휴장은 설(2/20~22), 혹서기(7/31~8/2), 추석(9/25~27) 세 번입니다. 월별 경주 수는 1월 65 · 2월 46 · 3월 56 · 4월 56 · 5월 75 · 6월 60 · 7월 60 · 8월 65 · 9월 43 · 10월 77 · 11월 54 · 12월 46입니다. 8월 7일~9월 6일 5주간은 금·토 야간경마로 열렸습니다.",
@@ -2054,7 +2056,7 @@ function bindTrack(box,rows,dist,focus){
   wrap.querySelector("#pacePlay").onclick=()=>{ if(paceTimer){clearInterval(paceTimer);paceTimer=null;rerender();return;} paceStep=0; rerender(); paceTimer=setInterval(()=>{paceStep=(paceStep+1)%n; if(paceStep===n-1){clearInterval(paceTimer);paceTimer=null;} rerender();},1100); };
 }
 
-function renderTerms(){ $("terms").innerHTML=TERMS[lang].map(([a,b])=>`<div class="term"><b>${a}</b><p>${b}</p></div>`).join(""); }
+function renderTerms(){ $("terms").innerHTML=TERMS[lang].map(([a,b,c])=>`<div class="term${c?" "+c:""}"><b>${a}</b><p>${b}</p></div>`).join(""); }
 
 $("lang-ko").onclick=()=>{lang="ko";render();if(drawerState&&drawerState.kind==="primer")openPrimer(drawerState.name);};
 $("lang-en").onclick=()=>{lang="en";render();if(drawerState&&drawerState.kind==="primer")openPrimer(drawerState.name);};
