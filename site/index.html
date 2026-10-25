@@ -456,6 +456,36 @@ tr.grp.s-front td{border-left-color:#d3262b}tr.grp.s-stalk td{border-left-color:
 h1,.rno,.rhead h2,section.gloss h2,section.load h2,section.results>h2,.rchip,.dh h2,.profile h4,.hero.small h1,.p101 .pcard h2,.p101 .gloss h2,.mstats .stat .v,.hcard h2,.hsec .kick{font-family:var(--body);font-weight:700;font-style:normal;letter-spacing:-.01em}
 .rchip{font-size:15px;font-weight:600}
 .day h1{font-size:clamp(28px,6vw,42px)}.rno{font-size:21px}.rhead h2{font-size:clamp(24px,5vw,32px)}.hero.small h1{font-size:clamp(30px,6.5vw,46px)}
+.chat{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:grid}
+.chathead{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--bg)}
+.chathead b{display:block;font-size:15px}.chathead small{color:var(--muted);font-size:12px}.chathead .qchip{margin-left:auto}
+.avatar{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--navy);color:#fff;flex:none}
+.chatlog{display:grid;gap:10px;padding:16px;max-height:min(70vh,760px);overflow:auto;scroll-behavior:smooth}
+.msg{display:flex;gap:8px;align-items:flex-end;max-width:min(720px,92%)}
+.msg.you{align-self:flex-end;flex-direction:row-reverse}
+.bubble{padding:10px 14px;border-radius:16px;font-size:15px;line-height:1.6;background:var(--bg);border:1px solid var(--line);border-bottom-left-radius:4px}
+.msg.you .bubble{background:var(--navy);color:#fff;border-color:var(--navy);border-bottom-left-radius:16px;border-bottom-right-radius:4px}
+.bubble .bt{display:block;margin-bottom:4px;font-size:16px}
+.bubble .src{display:block;margin-top:8px;font-size:12px;color:var(--muted)}
+.bubble.typing{display:flex;gap:4px;padding:14px 16px}.bubble.typing i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:tp 1s infinite}
+.bubble.typing i:nth-child(2){animation-delay:.15s}.bubble.typing i:nth-child(3){animation-delay:.3s}
+@keyframes tp{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+.chatlog .chips{margin:2px 0 4px 42px;gap:8px}
+.chiplbl{align-self:center;font-size:12px;color:var(--muted);margin-right:2px}
+.qchip{border:1px solid var(--navy);color:var(--navy);background:var(--surface);border-radius:999px;padding:7px 14px;font:inherit;font-size:14px;cursor:pointer;text-decoration:none;line-height:1.3}
+.qchip:hover{background:var(--navy);color:#fff}
+.qchip.ghost{border-color:var(--line);color:var(--muted);padding:5px 10px;font-size:13px}.qchip.ghost:hover{background:var(--bg);color:var(--ink)}
+.qchip.go{background:var(--tangerine);border-color:var(--tangerine);color:#fff;font-weight:700}
+.chatnote{margin:0;padding:8px 16px 12px;border-top:1px solid var(--line)}
+.alltopics{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 18px;margin-top:16px}
+.alltopics summary{cursor:pointer;font-weight:700;font-size:16px}.alltopics summary small{color:var(--muted);font-weight:400;margin-left:6px}
+.alltopics .tgroup{margin-top:14px}.alltopics .tgroup h3{margin:0 0 6px;font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.alltopics .terms{margin-top:12px}
+:root[data-theme="dark"] .qchip{color:#c9d4f5;border-color:#4a5a8a}:root[data-theme="dark"] .qchip:hover{background:#2a3a6a;color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .qchip{color:#c9d4f5;border-color:#4a5a8a}:root:not([data-theme="light"]) .qchip:hover{background:#2a3a6a;color:#fff}}
+@media (max-width:640px){.chatlog{max-height:none;padding:12px}.msg{max-width:96%}.chatlog .chips{margin-left:0}.bubble{font-size:14px}}
+.chathead .qchip{white-space:nowrap}
+html[lang="ko"] .hero.small h1{font-family:var(--body);font-weight:700}
 </style>
 
 <nav class="topnav" aria-label="Main">
@@ -805,11 +835,86 @@ function renderHome(){
 }
 $("burger").onclick=()=>{const n=document.querySelector(".topnav"); const o=n.classList.toggle("open"); $("burger").setAttribute("aria-expanded",o);};
 document.querySelectorAll("#navtabs a").forEach(a=>a.addEventListener("click",()=>document.querySelector(".topnav").classList.remove("open")));
-function render101(){ const t=T[lang], i=lang==="ko"?0:1;
-  $("p101").innerHTML=`<div class="hero small"><div class="eyebrow">${t.nav["101"]}</div><h1>${t.primerTitle}</h1><p>${t.primerLede}</p></div>
-    <div class="pgrid">${PRIMER.map((c,n)=>`<article class="pcard" id="pp-${c.k}"><span class="hnum">0${n+1}</span><h2>${c.t[i]}</h2><div class="pb">${c.b[i]}</div><span class="src">${c.s}</span></article>`).join("")}</div>
-    <section class="gloss"><h2>${t.gloss}</h2><div class="terms">${TERMS[lang].map(([a,b])=>`<div class="term"><b>${a}</b><p>${b}</p></div>`).join("")}</div></section>`;
+/* ---- JEJU 101: 질문 칩으로 진행하는 가이드 챗 (답은 GUIDE에서, AI 아님) ---- */
+var chatLog=[];            // [{k:topicKey}] 또는 {pick:groupKey} (그룹 펼침)
+var chatTour=-1;           // 투어 진행 위치 (-1: 아님)
+var chatTyping=false;
+const gById=k=>GUIDE.find(c=>c.k===k);
+function guideT(){ const ko=lang==="ko"; return {
+  hello:ko?"안녕하세요! 제주경마 가이드입니다. 처음 보시나요? 아래에서 궁금한 걸 골라 주세요. 답은 2026년 제주경마 시행계획에서 미리 정리해 둔 내용이에요.":"Hi! I'm the Jeju Guide. First time watching Jeju racing? Pick a question below. My answers come from the 2026 Jeju Racing Plan, written up in advance.",
+  tour:ko?"2분 입문 투어 시작":"Start the 2-minute intro",
+  more:ko?"다른 주제 보기":"More topics",
+  next:ko?"다음 →":"Next →",
+  tourEnd:ko?"투어 끝! 이제 오늘 출전표를 보러 가 볼까요?":"That's the tour. Ready to look at today's race card?",
+  openCard:ko?"오늘 레이스카드 열기 →":"Open today's race card →",
+  related:ko?"이어서 물어보기":"Ask next",
+  reset:ko?"처음부터":"Start over",
+  pick:ko?"어떤 주제가 궁금하세요?":"Which topic?",
+  all:ko?"전체 주제 보기":"Browse all topics",
+  allN:n=>ko?`주제 ${n}개 · 2026년 제주경마 시행계획 기준`:`${n} topics · from the 2026 Jeju Racing Plan`,
+  src:ko?"출처":"Source",
+  note:ko?"가이드는 AI가 아닙니다. 답은 시행계획과 공공데이터에서 미리 정리한 내용이며, 세부 규정은 바뀔 수 있습니다.":"The guide is not AI. Answers are written in advance from the Racing Plan and public data, and rules can change.",
+  you:ko?"나":"You", guide:ko?"제주 가이드":"Jeju Guide",
+  gloss:ko?"용어 풀이":"Glossary"
+};}
+const srcL=x=>lang==="ko"?x.replace("2026 Jeju Racing Plan","2026년 제주경마 시행계획").replace("KRA horse data (breed code)","한국마사회 마필정보(마종 코드)").replace("KRA daily workout data","한국마사회 일일 조교 데이터").replace("KRA track reports","한국마사회 주로 상태 발표").replace(/pp?\./,"p."):x;
+function chip(label,attrs){ return `<button type="button" class="qchip" ${attrs}>${label}</button>`; }
+function chipsFor(keys,asked){ const i=lang==="ko"?0:1; return keys.filter(k=>!asked.has(k)).map(k=>chip(gById(k).q[i],`data-ask="${k}"`)).join(""); }
+function render101(){ const t=T[lang], g=guideT(), i=lang==="ko"?0:1;
+  const asked=new Set(chatLog.filter(m=>m.k).map(m=>m.k));
+  const starter=["horses","class","weight","big","timeline","prize"];
+  let html=`<div class="hero small"><div class="eyebrow">${t.nav["101"]}</div><h1>${t.primerTitle}</h1><p>${t.primerLede}</p></div>
+  <section class="chat" aria-label="Jeju Guide">
+    <div class="chathead"><span class="avatar" aria-hidden="true">${PONY_SVG}</span><div><b>${g.guide}</b><small>${g.allN(GUIDE.length)}</small></div><button type="button" class="qchip ghost" id="chatReset">${g.reset}</button></div>
+    <div class="chatlog" id="chatlog">
+      <div class="msg guide"><span class="avatar" aria-hidden="true">${PONY_SVG}</span><div class="bubble">${g.hello}</div></div>
+      ${chatLog.length?"":`<div class="chips">${chip(g.tour,'data-tour="0"')}${chipsFor(starter,asked)}${chip(g.more,'data-more="1"')}</div>`}`;
+  chatLog.forEach((m,n)=>{
+    const last=n===chatLog.length-1;
+    if(m.pick){ // 그룹 선택
+      html+=`<div class="msg guide"><span class="avatar" aria-hidden="true">${PONY_SVG}</span><div class="bubble">${g.pick}</div></div>`;
+      if(last) html+=`<div class="chips groups">${GUIDE_GROUPS.map(gr=>chip(gr.t[i],`data-group="${gr.k}"`)).join("")}</div>`;
+      return;
+    }
+    if(m.group){ const keys=GUIDE.filter(c=>c.g===m.group).map(c=>c.k); const gr=GUIDE_GROUPS.find(x=>x.k===m.group);
+      html+=`<div class="msg you"><div class="bubble">${gr.t[i]}</div></div>`;
+      if(last) html+=`<div class="chips">${chipsFor(keys,asked)||chip(g.more,'data-more="1"')}</div>`;
+      return;
+    }
+    const c=gById(m.k); if(!c) return;
+    html+=`<div class="msg you"><div class="bubble">${c.q[i]}</div></div>`;
+    if(last&&chatTyping){ html+=`<div class="msg guide"><span class="avatar" aria-hidden="true">${PONY_SVG}</span><div class="bubble typing"><i></i><i></i><i></i></div></div>`; return; }
+    html+=`<div class="msg guide"><span class="avatar" aria-hidden="true">${PONY_SVG}</span><div class="bubble"><b class="bt">${c.t[i]}</b>${c.b[i]}<span class="src">${g.src}: ${srcL(c.s)}</span></div></div>`;
+    if(last){
+      if(m.tour!=null){ const nx=GUIDE_TOUR[m.tour+1];
+        html+=nx?`<div class="chips">${chip(`${g.next} ${gById(nx).q[i]}`,`data-tour="${m.tour+1}"`)}${chip(g.more,'data-more="1"')}</div>`
+                :`<div class="msg guide"><span class="avatar" aria-hidden="true">${PONY_SVG}</span><div class="bubble">${g.tourEnd}</div></div><div class="chips"><a class="qchip go" href="#/card">${g.openCard}</a>${chip(g.more,'data-more="1"')}</div>`;
+      } else {
+        const rel=(c.f||[]).filter(k=>!asked.has(k)); const fill=GUIDE.filter(x=>x.g===c.g&&!asked.has(x.k)&&!rel.includes(x.k)).map(x=>x.k).slice(0,Math.max(0,3-rel.length));
+        html+=`<div class="chips"><span class="chiplbl">${g.related}</span>${chipsFor(rel.concat(fill),asked)}${chip(g.more,'data-more="1"')}</div>`;
+      }
+    }
+  });
+  html+=`</div><p class="chnote chatnote">${g.note}</p></section>
+  <details class="alltopics"><summary>${g.all} <small>${g.allN(GUIDE.length)}</small></summary>
+    ${GUIDE_GROUPS.map(gr=>`<div class="tgroup"><h3>${gr.t[i]}</h3><div class="chips">${GUIDE.filter(c=>c.g===gr.k).map(c=>chip(c.q[i],`data-ask="${c.k}" data-scroll="1"`)).join("")}</div></div>`).join("")}
+  </details>
+  <details class="alltopics"><summary>${g.gloss}</summary><div class="terms">${TERMS[lang].map(([a,b])=>`<div class="term"><b>${a}</b><p>${b}</p></div>`).join("")}</div></details>`;
+  $("p101").innerHTML=html;
+  const box=$("p101");
+  box.querySelectorAll("[data-ask]").forEach(b=>b.onclick=()=>askGuide(b.dataset.ask,null,!!b.dataset.scroll));
+  box.querySelectorAll("[data-tour]").forEach(b=>b.onclick=()=>askGuide(GUIDE_TOUR[+b.dataset.tour],+b.dataset.tour));
+  box.querySelectorAll("[data-more]").forEach(b=>b.onclick=()=>{chatLog.push({pick:1}); render101(); chatScroll();});
+  box.querySelectorAll("[data-group]").forEach(b=>b.onclick=()=>{chatLog.push({group:b.dataset.group}); render101(); chatScroll();});
+  const r=$("chatReset"); if(r) r.onclick=()=>{chatLog=[]; chatTyping=false; render101();};
 }
+function askGuide(k,tour,scroll){
+  if(chatTyping) return;
+  chatLog.push(tour!=null?{k,tour}:{k}); chatTyping=true; render101(); chatScroll(scroll);
+  setTimeout(()=>{ chatTyping=false; render101(); chatScroll(scroll); },450+Math.random()*300);
+}
+function chatScroll(toTop){ const l=$("chatlog"); if(!l) return; if(toTop){ const s=document.querySelector(".chat"); if(s) s.scrollIntoView({block:"start"}); } l.scrollTop=l.scrollHeight; }
+const PONY_SVG=`<svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><path fill="currentColor" d="M7 27c0-7 2-13 7-16l1-6 3 4 3-3 1 6c4 1 6 4 6 7 0 2-1 3-3 3-1 0-2-1-2-2l-2-1c-1 2-3 3-5 4-1 1-2 2-2 4H7z"/><circle cx="22" cy="14" r="1.3" fill="var(--navy)"/></svg>`;
 
 function render(){
   const t=T[lang]; document.documentElement.lang=lang;
@@ -1436,61 +1541,140 @@ const ordEn=n=>{const s=["th","st","nd","rd"],v=n%100;return n+(s[(v-20)%10]||s[
 const ordL=n=>n===99?"–":(lang==="ko"?`${n}착`:ordEn(n));
 const glBtn=(key,label)=>`<button type="button" class="gl" data-g="${key}">${label}</button>`;
 const RBAND={1:"R81+",2:"R61–80",3:"R41–60",4:"R21–40",5:"R1–20"};
-const PRIMER=[
- {k:"jeju",
-  t:["제주경마 한눈에","Jeju racing at a glance"],
-  b:["2026년 제주는 1월부터 12월까지 약 100일, 총 703경주를 시행하고 전 경주를 중계합니다. 설, 한여름, 추석에는 휴장합니다. 8월 7일~9월 6일 5주간은 금·토 야간경마를 했고, 월요일 공휴일 3일(3/2, 8/17, 10/5)에도 경주가 열립니다.",
-     "In 2026 Jeju races about 100 days and 703 races from January to December, and every race is broadcast. There are no meetings around Lunar New Year, the midsummer break or Chuseok. Friday and Saturday night racing ran for five weeks from 7 Aug to 6 Sep, and three Monday public holidays (2 Mar, 17 Aug, 5 Oct) also have a Jeju card."],
-  s:"2026 Jeju Racing Plan, pp.1, 4–6"},
- {k:"horses",
-  t:["경주마: 제주마와 한라마","The horses: Jeju pony and Halla horse"],
-  b:["제주경마장에는 천연기념물 제주마와, 제주마 혈통이 섞인 한라마가 출전합니다. 서울·부경의 더러브렛보다 체구가 작습니다. 이 페이지의 '제주마 / 한라마' 표시는 KRA 마필 정보의 품종 구분(제·한)입니다.",
-     "Jeju races feature the native Jeju pony (a natural monument) and the Halla horse, a Jeju–Thoroughbred cross. Both are smaller than the Thoroughbreds raced in Seoul and Busan. The 'Jeju pony / Halla horse' label on this page comes from the breed code in KRA's horse data."],
-  s:"KRA horse data (breed code)"},
- {k:"class",
-  t:["등급과 레이팅","Classes and ratings"],
-  b:["1~5등급은 레이팅 구간으로 나뉩니다: 1등급 R81 이상, 2등급 R61~80, 3등급 R41~60, 4등급 R21~40, 5등급 R1~20. 6등급은 아직 레이팅이 없는 말들의 입문 등급(2026년 기준 4세 이하, 순위상금 누적 700만 원 미만)입니다. 700만 원에 도달하면 레이팅(R1~20)을 받고 5등급으로 올라갑니다. 레이팅 1점은 부담중량 0.5kg이며, 조정 내용은 매주 경마 종료 후 KRA 홈페이지에 공지됩니다.",
-     "Classes 1–5 are set by rating band: Class 1 is R81+, Class 2 R61–80, Class 3 R41–60, Class 4 R21–40, Class 5 R1–20. Class 6 is the entry level for horses with no rating yet (in 2026: four-year-olds and under with career prize money below ₩7M). On reaching ₩7M a horse is given a rating (R1–20) and moves up to Class 5. One rating point equals 0.5 kg of weight, and rating changes are published on KRA's site after each race day."],
-  s:"2026 Jeju Racing Plan, pp.7, 11–13"},
- {k:"weight",
-  t:["부담중량과 수습기수","Weights and apprentice riders"],
-  b:["6등급은 별정A: 성별에 관계없이 55kg으로 같습니다. 나머지 등급은 핸디캡으로, 레이팅 차이를 중량으로 맞춥니다(1점=0.5kg, 최저 51kg, 2~5등급은 상한 60kg). 수습기수는 우승 횟수에 따라 중량을 감량받습니다: 10승 미만 4kg, 10~19승 3kg, 20~29승 2kg, 30~39승 1kg(일반경주, 데뷔 후 5년 이내). 그래서 6등급에서 55kg 미만이면 수습기수가 탔다는 신호입니다.",
-     "Class 6 uses set weights (Set A): every horse carries 55 kg regardless of sex. Other classes are handicaps, with rating differences turned into weight (1 point = 0.5 kg, minimum 51 kg, and a 60 kg cap in Classes 2–5). Apprentice jockeys claim an allowance by number of wins: under 10 wins 4 kg, 10–19 wins 3 kg, 20–29 wins 2 kg, 30–39 wins 1 kg (standard races, up to five years from debut). So in a Class 6 race, a weight under 55 kg signals an apprentice."],
-  s:"2026 Jeju Racing Plan, pp.8–11"},
- {k:"distance",
-  t:["경주거리","Distances"],
-  b:["제주는 800 · 900 · 1000 · 1110 · 1200 · 1300 · 1400 · 1610m, 8가지 거리를 씁니다. 2026년 6등급 경주는 800 · 900 · 1000m입니다. 기승 횟수 30회 이하의 기수는 1300 · 1400 · 1610m 경주를 탈 수 없습니다.",
-     "Jeju uses eight distances: 800, 900, 1000, 1110, 1200, 1300, 1400 and 1610 m. Class 6 races in 2026 are run at 800, 900 or 1000 m. Jockeys with 30 rides or fewer are not allowed to ride at 1300, 1400 or 1610 m."],
-  s:"2026 Jeju Racing Plan, pp.3, 8"},
- {k:"prize",
-  t:["상금","Prize money"],
-  b:["순위상금은 1위 50% · 2위 23% · 3위 15% · 4위 7% · 5위 5%로 나뉩니다. 1~5위 합계는 1등급 4,400만 원, 2등급 3,700만, 3등급 3,100만, 4등급 2,600만, 5등급 2,100만, 6등급 1,400만 원입니다. 상금은 마주 60.21%, 조교사 31.59%, 기수 8.20%로 나눠 받고, 기수는 별도로 기승료(일반경주 주간 103,000원)를 받습니다.",
-     "Purses are split 50% / 23% / 15% / 7% / 5% across the first five places. Total purse by class: Class 1 ₩44M, Class 2 ₩37M, Class 3 ₩31M, Class 4 ₩26M, Class 5 ₩21M, Class 6 ₩14M. The winnings are shared 60.21% to the owner, 31.59% to the trainer and 8.20% to the jockey, and the jockey also receives a riding fee (₩103,000 in a standard daytime race)."],
-  s:"2026 Jeju Racing Plan, pp.18–19"},
- {k:"trials",
-  t:["경주마가 되기까지: 심사","Getting to the races: qualifying trials"],
-  b:["신마는 출발심사와 800m 주행심사를 통과해야 경주에 나올 수 있습니다. 2026년 주행심사 합격 기준은 800m 1분 10.0초 이내입니다(2022년 1분 13.0초에서 해마다 빨라졌습니다). 마지막 심사 통과일이나 경주 출전일로부터 120일 이상 쉬면 주행심사를 다시 받아야 합니다. 경주 중 폐출혈이 나오면 1~3개월 출전정지와 재심사를 받습니다.",
-     "A new horse must pass a barrier trial and an 800 m qualifying trial before it can race. The 2026 pass standard is 1:10.0 or faster over 800 m (it was 1:13.0 in 2022 and has tightened every year). A horse that has not raced or passed a trial for 120 days or more must re-qualify. A horse that bleeds in a race is suspended for one to three months and must re-pass a trial."],
-  s:"2026 Jeju Racing Plan, pp.2, 21–25"},
- {k:"card",
-  t:["출전표는 이렇게 만들어집니다","How a race card is put together"],
-  b:["출전신청은 경주가 있는 주 수요일 10:00~11:00에 받습니다. 한 경주는 7~10두(일부 대상경주 12두)로 편성하고, 7두 미만이면 취소하거나 다시 신청받으며 14두 이상이면 경주를 나눌 수 있습니다. 마주와 조교사는 한 경주에 2두까지 낼 수 있고, 말은 한 주에 한 경주만 뜁니다. 출발번호는 일반경주에서 컴퓨터가 무작위로 뽑습니다. 경주 출전예정일 기준 24개월 미만의 말은 신청할 수 없고, 6등급에서는 출전 경험이 없는 신마가 우선 편성됩니다.",
-     "Entries are taken on the Wednesday of race week, 10:00–11:00. A race has 7 to 10 runners (12 in some stakes); fewer than 7 and it is cancelled or re-opened, and 14 or more can be split into two divisions. An owner or trainer may enter at most two horses in one race, and a horse may run in only one race a week. Draw numbers in standard races are assigned by computer at random. Horses under 24 months of age on race day cannot enter, and in Class 6 horses with no race experience get priority."],
-  s:"2026 Jeju Racing Plan, pp.26–35"},
- {k:"work",
-  t:["조교(훈련) 기록 읽는 법","Reading the workout data"],
-  b:["제주 경주마는 매일 새벽 경주로에서 조교를 받고, 기록에는 날짜, 훈련 시간(분), 누가 탔는지(기수·조교사·관리사)가 남습니다. 해외처럼 몇 m를 몇 초에 달렸는지는 공개되지 않아서, 평소보다 많이 또는 적게 탔는지, 이번에 탈 기수가 직접 조교에 올라탔는지를 봅니다. 출전 신청 전 2주간 5회 이상 조교는 의무라, 출전마는 기본 조교량은 채우고 나옵니다.",
-     "Jeju horses work on the track most mornings. The public record shows the date, minutes on the track and who rode (jockey, trainer or groom). Clockings over set distances are not published as they are abroad, so the useful signals are whether a horse did more or less than usual and whether today's jockey rode it in work. At least five workouts in the two weeks before entry are compulsory, so every runner meets a baseline."],
-  s:"KRA daily workout data · 2026 Jeju Racing Plan, p.28"},
- {k:"big",
-  t:["다가오는 큰 경주 (2026)","Big races ahead (2026)"],
-  b:["<b>10월 17일</b> 제주특별자치도지사배(제36회, 1400m, 6세 이하, 핸디캡, 10두, 순위상금 합계 1억 5천만 원) · 호국영웅 레클리스(1200m, 7세 이상, 12두, 5,500만 원)<br><b>11월 14일</b> 마주협회장배(1200m, 3세 이하, 12두, 9,000만 원)<br><b>11월 28일</b> 제주일마배(제34회, 1610m, 오픈, 12두, 1억 원)<br><small>일정과 조건은 경마 시행 상황에 따라 바뀔 수 있습니다.</small>",
-     "<b>17 Oct</b> Jeju Governor's Cup (36th, 1400 m, six-year-olds and under, handicap, 10 runners, total purse ₩150M) · Hoguk Yeongung Reclis (1200 m, seven-year-olds and over, 12 runners, ₩55M)<br><b>14 Nov</b> Owners' Association Chairman's Cup (1200 m, three-year-olds and under, 12 runners, ₩90M)<br><b>28 Nov</b> Jeju Ilma Cup (34th, 1610 m, open, 12 runners, ₩100M)<br><small>Dates and conditions may change depending on how the racing programme runs.</small>"],
-  s:"2026 Jeju Racing Plan, p.16"}
+/* ---- JEJU 101 가이드 지식: 2026년 제주경마 시행계획에서 관람객용으로 고른 주제 (영/한) ----
+   g: 그룹, q: 질문 칩, t: 제목, b: 답, s: 출처, f: 이어지는 질문 */
+const GUIDE_GROUPS=[
+ {k:"basics",t:["기본","The basics"]},
+ {k:"card",t:["레이스카드 읽기","Reading the race card"]},
+ {k:"raceday",t:["경주일 진행","Race day"]},
+ {k:"stakes",t:["큰 경주","Big races"]},
+ {k:"money",t:["상금과 사람들","Money and people"]},
+ {k:"welfare",t:["말 복지와 검사","Welfare and checks"]}
 ];
+const GUIDE=[
+ {k:"jeju",g:"basics",q:["제주경마는 어떤 경마인가요?","What is Jeju racing?"],t:["제주경마 한눈에","Jeju racing at a glance"],
+  b:["제주경마공원은 제주시 애월읍에 있는 1,610m 모래 주로 경마장입니다. 한국에서 유일하게 토종 조랑말 경주를 엽니다. 2026년에는 1월 2일부터 12월 25일까지 약 100일, 703경주를 시행하고 전 경주를 중계합니다. 보통 금·토요일에 열리고, 월요일 공휴일 3일(3/2, 8/17, 10/5)에도 경주가 있습니다.",
+     "Jeju Racecourse, in Aewol on the island's north-west coast, is a 1,610 m sand track and the only place in Korea that races the native pony. In 2026 it races about 100 days and 703 races from 2 Jan to 25 Dec, and every race is broadcast. Meetings are normally Friday and Saturday, plus three Monday public holidays (2 Mar, 17 Aug, 5 Oct)."],
+  s:"2026 Jeju Racing Plan, pp.4–6",f:["horses","calendar","compare"]},
+ {k:"horses",g:"basics",q:["어떤 말이 달리나요?","What kind of horses race?"],t:["경주마: 제주마와 한라마","The horses: Jeju pony and Halla horse"],
+  b:["제주경마장에는 천연기념물 제주마와, 제주마 혈통이 섞인 한라마가 출전합니다. 서울·부경의 더러브렛보다 체구가 작고, 경주 기록도 그만큼 느립니다. 이 페이지의 '제주마 / 한라마' 표시는 한국마사회 마필 정보의 마종 코드에서 가져옵니다.",
+     "Jeju races feature the native Jeju pony (a natural monument) and the Halla horse, a Jeju–Thoroughbred cross. Both are smaller than the Thoroughbreds raced in Seoul and Busan, and times are slower to match. The 'Jeju pony / Halla horse' label on this site comes from the breed code in KRA's horse data."],
+  s:"KRA horse data (breed code)",f:["class","distance","welfare"]},
+ {k:"calendar",g:"basics",q:["2026년 경주는 언제 있나요?","When does Jeju race in 2026?"],t:["2026년 일정","The 2026 calendar"],
+  b:["시즌은 1월 2일(금)~12월 25일(금)이고 12월 26일은 취소 경주를 보전하는 예비경마일입니다. 휴장은 설(2/20~22), 혹서기(7/31~8/2), 추석(9/25~27) 세 번입니다. 월별 경주 수는 1월 65 · 2월 46 · 3월 56 · 4월 56 · 5월 75 · 6월 60 · 7월 60 · 8월 65 · 9월 43 · 10월 77 · 11월 54 · 12월 46입니다. 8월 7일~9월 6일 5주간은 금·토 야간경마로 열렸습니다.",
+     "The season runs from Fri 2 Jan to Fri 25 Dec, with 26 Dec held as a reserve day for cancelled races. There are three breaks: Lunar New Year (20–22 Feb), midsummer (31 Jul–2 Aug) and Chuseok (25–27 Sep). Races by month: Jan 65 · Feb 46 · Mar 56 · Apr 56 · May 75 · Jun 60 · Jul 60 · Aug 65 · Sep 43 · Oct 77 · Nov 54 · Dec 46. For five weeks from 7 Aug to 6 Sep the Friday and Saturday meetings were run at night."],
+  s:"2026 Jeju Racing Plan, pp.4–6",f:["times","big","weather"]},
+ {k:"compare",g:"basics",q:["서울·부산 경마와 뭐가 다른가요?","How is it different from Seoul or Busan?"],t:["서울·부경과의 차이","Jeju vs Seoul and Busan"],
+  b:["서울(101일, 1,045경주)과 부산경남(86일, 673경주)은 더러브렛 경마이고, 제주(100일, 703경주)는 조랑말 경마입니다. 영천은 9월 13일부터 12월 6일까지 12일, 72경주만 엽니다. 네 경마장 모두 전 경주를 중계·발매합니다. 제주는 경주 거리가 800~1610m로 짧고, 출전 두수가 7~10두로 적으며, 6등급 경주는 성별 관계없이 같은 55kg을 집니다.",
+     "Seoul (101 days, 1,045 races) and Busan-Gyeongnam (86 days, 673 races) race Thoroughbreds; Jeju (100 days, 703 races) races ponies. Yeongcheon holds just 12 days and 72 races from 13 Sep to 6 Dec. All four tracks broadcast and bet on every race. Jeju's distances are short (800–1610 m), fields are small (7 to 10 runners) and Class 6 races are run at level weights of 55 kg whatever the sex."],
+  s:"2026 Jeju Racing Plan, p.4",f:["distance","fields","horses"]},
+ {k:"whatsnew",g:"basics",q:["2026년에 바뀐 건 뭔가요?","What changed in 2026?"],t:["2026년 달라진 점","What's new in 2026"],
+  b:["대상·특별경주 상금이 올랐습니다(JIBS배·KCTV배 6천만→7천만 원, 마주협회장배 8천만→9천만, 제주마사랑·레클리스 5천만→5,500만, 1등급 일반경주 4,300만→4,400만). 경주당 최저 편성 두수가 8두에서 7두로 줄었고, 주행심사 합격 기준은 1분 10.5초에서 1분 10.0초로 빨라졌습니다. 6등급 부담중량은 성별 관계없이 55kg(전에는 암말 54kg)이 됐고, 6등급 거리에 1000m가 추가됐습니다. 기승 30회 이하 기수의 제한 거리에 1610m가 더해졌습니다. 2027년부터는 6등급 출전이 4세 상반기까지, 최대 15회로 제한됩니다.",
+     "Stakes purses went up (JIBS and KCTV Cups ₩60M→70M, Owners' Association Cup ₩80M→90M, Jeju Love and Reckless ₩50M→55M, Class 1 standard races ₩43M→44M). The minimum field fell from 8 to 7, and the qualifying-trial standard tightened from 1:10.5 to 1:10.0. Class 6 now carries 55 kg for every sex (mares used to get 54 kg) and may be run at 1000 m as well as 800 and 900 m. Jockeys with 30 rides or fewer are now also barred from 1610 m. From 2027 a horse may run in Class 6 only until the first half of its four-year-old season and for at most 15 starts."],
+  s:"2026 Jeju Racing Plan, pp.1–3",f:["class","trials","big"]},
+
+ {k:"class",g:"card",q:["등급과 레이팅은 어떻게 되나요?","How do classes and ratings work?"],t:["등급과 레이팅","Classes and ratings"],
+  b:["1~5등급은 레이팅 구간으로 나뉩니다: 1등급 R81 이상, 2등급 R61~80, 3등급 R41~60, 4등급 R21~40, 5등급 R1~20. 6등급은 아직 레이팅이 없는 말들의 입문 등급입니다(2026년: 4세 이하, 순위상금 수득액 700만 원 미만). 700만 원에 도달하면 레이팅(R1~20)을 받고 5등급으로 올라갑니다. 레이팅 1점은 부담중량 0.5kg이고, 레이팅 변동은 매주 경마 종료 후 한국마사회 경마정보 '경주마 프로필'에 공지됩니다.",
+     "Classes 1–5 are set by rating band: Class 1 is R81+, Class 2 R61–80, Class 3 R41–60, Class 4 R21–40, Class 5 R1–20. Class 6 is the entry level for horses with no rating yet (in 2026: four-year-olds and under with career prize money below ₩7M). On reaching ₩7M a horse is given a rating (R1–20) and moves up to Class 5. One rating point equals 0.5 kg of weight, and rating changes are published on KRA's racing-information site after each race week."],
+  s:"2026 Jeju Racing Plan, pp.7, 11–13",f:["ratingmoves","weight","fields"]},
+ {k:"ratingmoves",g:"card",q:["레이팅은 어떻게 오르내리나요?","How do ratings go up and down?"],t:["레이팅 조정 방식","How ratings move"],
+  b:["핸디캡위원은 경주마다 '기준마'(성적이 꾸준한 말)를 정하고, 그보다 앞서 들어온 말의 레이팅을 올립니다. 기본은 1마신당 1점이고, 한 경주의 최대 인상폭은 우승마 +30, 2위 +15, 3위 이하 +8입니다. 기준마보다 뒤진 말은 1~4점(대부분 2점 이내) 내릴 수 있습니다. 주행 방해를 받았거나 출발이 늦었거나, 경주 후 마체 이상이 발견된 말, 금지약물이 검출된 말 등은 내리지 않습니다. 마주는 발표 다음 주 수요일 13시까지 이의신청을 할 수 있습니다.",
+     "After each race the handicappers pick a 'line horse', a runner with consistent form, and raise the ratings of those that finished ahead of it: roughly one point per length, capped at +30 for the winner, +15 for second and +8 for third or worse. Horses beaten by the line horse may be cut by 1 to 4 points (usually 2 or fewer). No cut is made for horses that were interfered with, started slowly, were found unsound after the race or tested positive. Owners may appeal until 13:00 on the Wednesday after publication."],
+  s:"2026 Jeju Racing Plan, pp.12–14",f:["class","weight","sanctions"]},
+ {k:"weight",g:"card",q:["부담중량은 어떻게 정해지나요?","How are weights set?"],t:["부담중량과 수습기수","Weights and apprentice riders"],
+  b:["6등급은 별정A: 성별에 관계없이 55kg으로 같습니다. 나머지 등급은 핸디캡으로, 레이팅 차이를 중량으로 맞춥니다(1점=0.5kg, 최저 51kg, 2~5등급은 상한 60kg, 1등급은 상한 없음). 수습기수는 우승 횟수에 따라 감량을 받습니다: 10승 미만 4kg, 10~19승 3kg, 20~29승 2kg, 30~39승 1kg. 감량은 일반경주에만 적용되고 데뷔 후 5년까지입니다.",
+     "Class 6 uses set weights (Set A): every horse carries 55 kg regardless of sex. Other classes are handicaps, with rating differences turned into weight (1 point = 0.5 kg, minimum 51 kg, and a 60 kg cap in Classes 2–5; no cap in Class 1). Apprentice jockeys claim an allowance by number of wins: under 10 wins 4 kg, 10–19 wins 3 kg, 20–29 wins 2 kg, 30–39 wins 1 kg. The claim applies in standard races only and for five years from the jockey's debut."],
+  s:"2026 Jeju Racing Plan, pp.8–11",f:["ageweight","class","jockeys"]},
+ {k:"ageweight",g:"card",q:["마령중량이 뭔가요?","What is weight-for-age?"],t:["마령중량","Weight-for-age"],
+  b:["나이와 시기에 따라 미리 정해진 중량입니다. 대상·특별경주 일부에만 쓰고, 2026년 8개 대상·특별경주는 모두 핸디캡이라 실제로는 거의 안 보입니다. 기준표(수·거세말): 900m 이하 2세 53~55kg, 3세 56~57kg, 4세 이상 57kg. 1200m 초과는 2세 50~53kg, 3세 54~55kg, 4세 이상 57kg. 연말로 갈수록 어린 말의 중량이 1kg씩 늘고, 암말은 1kg 감량합니다. 나이는 1월 1일 기준입니다.",
+     "A fixed scale by age and time of year. It is used only in some stakes, and since all eight 2026 stakes are handicaps you will rarely see it. The scale (colts and geldings): at 900 m or less two-year-olds carry 53–55 kg, three-year-olds 56–57 kg and older horses 57 kg; over 1200 m it is 50–53 kg, 54–55 kg and 57 kg. Younger horses carry a kilo more each quarter as the year goes on, and fillies and mares get 1 kg off. Ages count from 1 January."],
+  s:"2026 Jeju Racing Plan, p.8",f:["weight","big"]},
+ {k:"distance",g:"card",q:["경주 거리는 어떻게 되나요?","What distances are run?"],t:["경주거리","Distances"],
+  b:["제주는 800 · 900 · 1000 · 1110 · 1200 · 1300 · 1400 · 1610m, 8가지 거리를 씁니다. 1610m는 주로 한 바퀴입니다. 2026년 6등급 경주는 800 · 900 · 1000m입니다. 기승 횟수 30회 이하의 기수는 1300 · 1400 · 1610m 경주에 탈 수 없습니다.",
+     "Jeju uses eight distances: 800, 900, 1000, 1110, 1200, 1300, 1400 and 1610 m; 1610 m is one full lap. Class 6 races in 2026 are run at 800, 900 or 1000 m. Jockeys with 30 rides or fewer are not allowed to ride at 1300, 1400 or 1610 m."],
+  s:"2026 Jeju Racing Plan, pp.3, 8",f:["going","colors","fields"]},
+ {k:"colors",g:"card",q:["안장번호 색은 무슨 뜻인가요?","What do the saddle-cloth colours mean?"],t:["마번 색과 등번호판","Cloth colours and number plates"],
+  b:["기수 모자와 안장번호 색은 출발 번호(게이트)로 정해집니다: 1번 흰색, 2번 노랑, 3번 빨강, 4번 검정, 5번 파랑, 6번 초록, 7번 갈색, 8번 분홍, 9번 보라, 10번 하늘색. 11·12번은 12두 편성 대상경주에서만 나옵니다. 이 사이트의 번호 배지도 같은 색을 씁니다. 말이 다는 등번호판은 일반경주에서는 모자색과 같고, 대상경주는 빨강, 특별경주는 파랑입니다.",
+     "Cap and saddle-cloth colours follow the gate number: 1 white, 2 yellow, 3 red, 4 black, 5 blue, 6 green, 7 brown, 8 pink, 9 purple, 10 sky blue; 11 and 12 appear only in 12-runner stakes. The number badges on this site use the same colours. The number plate on the horse matches the cap colour in standard races, but is red in a stakes race and blue in a special race."],
+  s:"2026 Jeju Racing Plan, pp.36, 59",f:["card","stakesrules"]},
+ {k:"card",g:"card",q:["출전표는 언제, 어떻게 나오나요?","When and how is the race card made?"],t:["출전표는 이렇게 만들어집니다","How a race card is put together"],
+  b:["연간 계획은 전년 12월, 월간 계획은 그 달 시작 2주 전후에 나옵니다. 핸디캡 중량은 일반경주는 전주 토요일, 대상·특별경주는 전주 목요일에 공표됩니다. 출전신청은 경주가 있는 주 수요일 10:00~11:00에 받고, 7두 미만이면 취소하거나 다시 신청받으며, 14두 이상이면 두 경주로 나눌 수 있습니다. 출전마가 확정되면 출발 번호를 추첨하고 기수를 정해 출전표를 공표합니다. 이 사이트는 매일 아침 그 출전표를 받아 레이스카드를 만듭니다.",
+     "The annual plan comes out the previous December and each monthly plan about two weeks before the month starts. Handicap weights are published on the Saturday of the week before for standard races and the Thursday before for stakes. Entries are taken on the Wednesday of race week, 10:00–11:00; a race with fewer than 7 runners is cancelled or re-opened, and one with 14 or more may be split in two. Once the field is confirmed, gates are drawn, jockeys named and the card published. This site collects that card every morning."],
+  s:"2026 Jeju Racing Plan, pp.26–35",f:["fields","times","colors"]},
+ {k:"fields",g:"card",q:["한 경주에 몇 마리가 나오나요?","How many runners are in a race?"],t:["출전 두수","Field sizes"],
+  b:["보통 7~10두입니다. 2026년부터 최소 편성 두수가 8두에서 7두로 내려갔고, 최대는 10두(1300 · 1400m 대상경주도 10두), 1200 · 1610m 대상경주는 12두입니다. 당일 집합 마감까지 5두 미만이 모이면 그 경주는 취소됩니다. 출전마가 적은 만큼 한 마리의 출발 실수가 결과를 크게 바꿀 수 있습니다.",
+     "Usually 7 to 10. From 2026 the minimum field is 7 (down from 8); the maximum is 10, including 1300 m and 1400 m stakes, and 12 in 1200 m and 1610 m stakes. If fewer than five horses turn up by the deadline on the day, the race is cancelled. With fields this small one bad start can change a result."],
+  s:"2026 Jeju Racing Plan, pp.3, 7, 16, 36",f:["card","compare"]},
+
+ {k:"timeline",g:"raceday",q:["경주 당일은 어떻게 진행되나요?","What happens on race day?"],t:["경주 진행 타임라인","The race-day timeline"],
+  b:["출발 180분 전: 전 출전마 혈액 채취·약물검사. 60분 전: 출전준비소 집합, 마체중 계량, 건강 점검, 개체 확인. 50분 전: 기수 전검량. 20~30분 전: 예시장 말예시, 마권 발매 시작. 10~15분 전: 경주로 입장, 결승선 앞 직선주로를 평보로 통과한 뒤 준비운동. 출발과 동시에 발매 종료. 출발 2~3분 후 착순 판정, 3~4분 후 1~6위 기수 후검량과 마체검사, 4~5분 후 경주 확정·환급. 경주 후 1~3위마와 심판 지정마는 뇨·혈액 약물검사를 받습니다.",
+     "180 minutes before the off every runner gives a blood sample for a drug test. At 60 minutes the horses gather at the pre-race barn, are weighed, health-checked and identified. At 50 minutes the jockeys weigh out. At 20–30 minutes the parade begins and betting opens. At 10–15 minutes the horses go onto the track, walk past the stands and warm up. Betting closes at the start. Placings are judged 2–3 minutes after the off, the first six jockeys weigh in and horses are vet-checked at 3–4 minutes, and the result is confirmed and paid out at 4–5 minutes. The first three and any horse the stewards name then give urine and blood for a post-race test."],
+  s:"2026 Jeju Racing Plan, p.40",f:["times","going","drugtest"]},
+ {k:"times",g:"raceday",q:["첫 경주는 몇 시인가요?","What time is the first race?"],t:["출발 시각","Start times"],
+  b:["주간 경마는 금요일 첫 경주 10:50, 토·일·월요일 10:35이고 마지막 경주는 17:55입니다. 경주 간격은 대부분 25분, 서울·부경 경주와 겹치는 시간대는 30~40분입니다. 가을 야간경마(8월 7일~9월 6일) 때는 금요일 13:00~19:55, 토요일 12:30~19:55였습니다. 실제 출발 시각은 월간 계획으로 조금씩 바뀔 수 있고, 이 사이트의 레이스카드에 경주별 출발 시각이 나옵니다.",
+     "Day racing starts at 10:50 on Fridays and 10:35 on Saturdays, Sundays and Mondays, with the last race at 17:55. Races are usually 25 minutes apart, stretching to 30–40 minutes when they interleave with Seoul and Busan. During autumn night racing (7 Aug–6 Sep) Friday ran 13:00–19:55 and Saturday 12:30–19:55. Exact times can shift with the monthly plan; the race card on this site shows each race's post time."],
+  s:"2026 Jeju Racing Plan, pp.5, 43–45",f:["calendar","timeline"]},
+ {k:"going",g:"raceday",q:["주로 상태는 어떻게 읽나요?","How do I read the going?"],t:["주로 상태 · 함수율","Going and moisture"],
+  b:["제주는 모래 주로라 '양호·불량' 대신 함수율(%)로 상태를 알립니다. 이 사이트는 건조(~5%), 양호(6~9%), 다습(10~14%), 포화(15~19%), 불량(20%~)으로 나눕니다. 물기가 많을수록 모래가 다져져서 기록이 빨라지는 경향이 있고, 마른 주로는 깊어서 느립니다. 레이스카드의 함수율은 경주 당일 발표 전까지 '발표 전'으로 표시됩니다.",
+     "Jeju is a sand track, so the going is reported as moisture content (%) rather than firm or soft. This site groups it as Dry (~5%), Good (6–9%), Moist (10–14%), Saturated (15–19%) and Sloppy (20%+). Wetter sand packs firmer and tends to run faster; a dry track is deep and slow. Until the day's reading is published the race card shows 'TBA'."],
+  s:"KRA track reports",f:["weather","timeline"]},
+ {k:"weather",g:"raceday",q:["날씨로 경주가 취소되기도 하나요?","Do races get cancelled for weather?"],t:["기상 취소","Weather cancellations"],
+  b:["드물지만 있습니다. 1991년부터 2025년까지 176일, 723경주가 날씨로 취소됐고 대부분은 짙은 안개 때문이었습니다. 태풍 3회(2002 루사, 2004 민들레, 2007 나리), 강풍·낙뢰, 2022년 12월 폭설도 있었습니다. 봄·초여름에 집중돼서 3월(128경주)과 5월(111경주)이 가장 많습니다. 2025년에는 5일 7경주가 안개로 취소됐습니다. 취소된 경주는 12월 26일 예비경마일이나 이후 경마일에 추가 편성해 보전하고, 상금은 그대로입니다.",
+     "Rarely, but yes. From 1991 to 2025, 176 days and 723 races were lost to weather, almost all to dense fog. Typhoons stopped racing three times (Rusa 2002, Mindulle 2004, Nari 2007), and strong wind, lightning and a December 2022 snowfall once each. Spring and early summer are the risky months: March (128 races) and May (111) lead the count. In 2025 seven races on five days were lost to fog. Cancelled races are re-run on the 26 Dec reserve day or added to later cards, with the same prize money."],
+  s:"2026 Jeju Racing Plan, pp.36–37, 56–57",f:["going","calendar"]},
+ {k:"drugtest",g:"raceday",q:["약물검사는 하나요?","Is there drug testing?"],t:["약물검사와 폐출혈 규정","Drug testing and bleeding rules"],
+  b:["전 출전마는 출발 3시간 전에 혈액 검사를 받고, 결과는 출발 30분 전까지 심판위원에게 통보됩니다. 경주 후에는 1~3위마와 심판 지정마가 뇨·혈액 검사를 받습니다. 금지약물이 검출된 말은 레이팅 조정에서 제외되고 제재를 받습니다. 경주 중 폐출혈이 생긴 말은 1회 출전정지 1개월, 2회 2개월, 3회 이상 3개월에 주행심사를 다시 받아야 하며, 2년 안에 3회 발생하면 경주마 등록이 취소됩니다.",
+     "Every runner gives a blood sample three hours before the race, and the results reach the stewards 30 minutes before the off. After the race the first three and any horse the stewards name give urine and blood. A positive test brings a penalty and the horse is left out of rating adjustments. A horse that bleeds (EIPH) in a race is stood down for one month the first time, two months the second and three months thereafter, and must re-qualify each time; three bleeds within two years end its racing career."],
+  s:"2026 Jeju Racing Plan, pp.25, 40",f:["vet","welfare","sanctions"]},
+
+ {k:"big",g:"stakes",q:["2026년 큰 경주는 어떤 게 있나요?","Which are the big races of 2026?"],t:["2026년 대상·특별경주","Stakes and special races, 2026"],
+  b:["대상경주 6개, 특별경주 2개, 모두 핸디캡입니다. <b>3월 21일</b> JIBS배(제11회, 1610m, 오픈, 7천만 원, 12두) · <b>5월 23일</b> KCTV배(제21회, 1400m, 오픈, 7천만, 10두) · <b>7월 18일</b> 제주마사랑(특별, 1300m, 오픈, 5,500만, 10두) · <b>9월 19일</b> 농림축산식품부장관배(제6회, 1610m, 오픈, 1억, 12두) · <b>10월 17일</b> 제주특별자치도지사배(제36회, 1400m, 6세 이하, 1억 5천만, 10두)와 호국영웅 레클리스(특별, 1200m, 7세 이상, 5,500만, 12두) · <b>11월 14일</b> 마주협회장배(제35회, 1200m, 3세 이하, 9천만, 12두) · <b>11월 28일</b> 제주일마배(제34회, 1610m, 오픈, 1억, 12두). 금액은 1~5위 순위상금 합계이고 일정은 바뀔 수 있습니다.",
+     "Six stakes and two special races, all handicaps. <b>21 Mar</b> JIBS Cup (11th, 1610 m, open, ₩70M, 12 runners) · <b>23 May</b> KCTV Cup (21st, 1400 m, open, ₩70M, 10) · <b>18 Jul</b> Jeju Love (special, 1300 m, open, ₩55M, 10) · <b>19 Sep</b> Minister of Agriculture Cup (6th, 1610 m, open, ₩100M, 12) · <b>17 Oct</b> Jeju Governor's Cup (36th, 1400 m, six-year-olds and under, ₩150M, 10) and Hoguk Yeongung Reckless (special, 1200 m, seven-year-olds and over, ₩55M, 12) · <b>14 Nov</b> Owners' Association Cup (35th, 1200 m, three-year-olds and under, ₩90M, 12) · <b>28 Nov</b> Jeju Ilma Cup (34th, 1610 m, open, ₩100M, 12). Purses are the total for the first five places; dates can change."],
+  s:"2026 Jeju Racing Plan, p.16",f:["stakesrules","prize","calendar"]},
+ {k:"stakesrules",g:"stakes",q:["대상경주는 일반경주와 뭐가 다른가요?","How are stakes different from standard races?"],t:["대상·특별경주의 규칙","Stakes rules"],
+  b:["대상경주는 등번호판이 빨강, 특별경주는 파랑입니다. 모두 핸디캡 중량이고, 1300 · 1400m는 최대 10두, 1200 · 1610m는 최대 12두입니다. 미승리마는 출전등록을 할 수 없습니다. 마주는 순위상금의 0.22%를 출전등록료로 내고, 그 돈은 부가상금이 되어 1~3위 마주에게 6:3:1로 돌아갑니다. 후원사가 있으면 경주 이름 앞에 후원사명이 붙습니다. 취소되면 전통을 잇기 위해 가능한 한 다른 날 보전합니다.",
+     "A stakes race uses red number plates and a special race blue. All are handicaps; fields are capped at 10 over 1300 and 1400 m and 12 over 1200 and 1610 m. Maidens cannot enter. Owners pay an entry fee of 0.22% of the purse, which is returned as a bonus to the owners of the first three at 6:3:1. A sponsor's name may be added in front of the race name. If a stakes race is cancelled it is re-run on a later date wherever possible, to keep the tradition going."],
+  s:"2026 Jeju Racing Plan, pp.15–16, 27, 36–37",f:["big","colors","prize"]},
+
+ {k:"prize",g:"money",q:["상금은 얼마나 되나요?","How much is the prize money?"],t:["상금","Prize money"],
+  b:["순위상금은 1위 50% · 2위 23% · 3위 15% · 4위 7% · 5위 5%로 나뉩니다. 1~5위 합계는 1등급 4,400만 원, 2등급 3,700만, 3등급 3,100만, 4등급 2,600만, 5등급 2,100만, 6등급 1,400만 원입니다(6등급 1위 700만 원). 순위상금은 마주 60.21%, 조교사(관리사 포함) 31.59%, 기수 8.20%로 나눕니다. 이와 별도로 출전만 해도 출전장려금(일반경주 마주 47만 원 · 조교사 13만 원, 대상경주 95만 · 30만)이 나오고, 기수는 기승료(일반경주 주간 10만 3천 원, 대상경주 35만 원)를 받습니다.",
+     "Purses are split 50% / 23% / 15% / 7% / 5% across the first five places. Total purse by class: Class 1 ₩44M, Class 2 ₩37M, Class 3 ₩31M, Class 4 ₩26M, Class 5 ₩21M, Class 6 ₩14M (so a Class 6 winner earns ₩7M). Winnings are shared 60.21% to the owner, 31.59% to the trainer (including grooms) and 8.20% to the jockey. On top of that every starter earns an appearance fee (standard race: ₩470,000 to the owner and ₩130,000 to the trainer; stakes: ₩950,000 and ₩300,000) and the jockey a riding fee (₩103,000 in a standard daytime race, ₩350,000 in a stakes race)."],
+  s:"2026 Jeju Racing Plan, pp.18–19",f:["people","big","class"]},
+ {k:"people",g:"money",q:["마주·조교사·기수는 어떤 관계인가요?","Who are the owner, trainer and jockey?"],t:["경마의 사람들","The people behind a runner"],
+  b:["마주는 한국마사회에 등록해 말을 출전시키고 상금을 받습니다. 마주는 조교사와 위탁관리 계약을 맺어 관리비와 상금 일부를 주고, 조교사는 기수와 기승 계약을, 관리사와 고용 계약을 맺습니다. 그래서 순위상금이 마주 60.21%, 조교사 31.59%, 기수 8.20%로 흘러갑니다. 야간경마와 공휴일 경마에는 출전마 1두당 각각 35만 원·30만 원의 인센티브가 조교사와 관리사에게 더 지급됩니다.",
+     "The owner registers with the KRA, enters the horse and collects the prize money. The owner contracts a trainer to manage the horse, paying fees and a share of winnings; the trainer in turn contracts the jockeys and employs the grooms. That is why winnings flow 60.21% to the owner, 31.59% to the trainer and 8.20% to the jockey. Night and public-holiday meetings pay an extra ₩350,000 and ₩300,000 per runner to the trainer and grooms."],
+  s:"2026 Jeju Racing Plan, pp.17–20",f:["prize","jockeys"]},
+ {k:"jockeys",g:"money",q:["기수에게는 어떤 규칙이 있나요?","What rules apply to jockeys?"],t:["기수 규정","Jockey rules"],
+  b:["수습기수는 우승 횟수에 따라 1~4kg 감량 혜택을 받고(일반경주, 데뷔 후 5년), 기승 30회 이하 기수는 1300 · 1400 · 1610m 경주에 탈 수 없습니다. 경주일 기승 기수는 자기 마지막 경주 다음 두 경주가 끝날 때까지 기수대기실에 머물러야 합니다. 경주 후에는 1~6위 기수와 심판이 지정한 기수가 후검량을 받습니다. 이 사이트의 기수 이름 옆 숫자는 통산 승률입니다.",
+     "Apprentices claim 1–4 kg by number of wins (standard races, for five years from debut), and jockeys with 30 rides or fewer may not ride at 1300, 1400 or 1610 m. On race day every rider must stay in the jockeys' room until two races after their last ride. After each race the first six jockeys, and any the stewards name, weigh in. The percentage next to a jockey's name on this site is their career strike rate."],
+  s:"2026 Jeju Racing Plan, pp.3, 10, 38, 40",f:["weight","distance","timeline"]},
+
+ {k:"trials",g:"welfare",q:["신마는 어떻게 경주에 나오나요?","How does a new horse get to the races?"],t:["경주마가 되기까지: 심사","Getting to the races: qualifying trials"],
+  b:["신마는 출발심사와 800m 주행심사를 통과해야 경주에 나올 수 있습니다. 출발심사는 수·일요일 아침에 게이트 진입과 50m 이상 전력질주 2회로 봅니다. 주행심사는 목요일 10:00, 55kg으로 800m를 달려 1분 10.0초 안에 들어와야 합니다(2022년 1분 13.0초에서 해마다 당겨졌고, 2027년에는 900m로 바뀔 예정). 주행심사 합격일 또는 마지막 출전일부터 120일이 지난 말도 다시 심사를 받아야 합니다. 이 사이트는 말 프로필에 주행심사 기록을 보여줍니다.",
+     "A new horse must pass a barrier trial and an 800 m qualifying trial before it can race. Barrier trials are held on Wednesday and Sunday mornings: load into the gate and sprint 50 m twice. The qualifying trial is on Thursdays at 10:00, carrying 55 kg over 800 m, and the horse must beat 1:10.0 (the standard was 1:13.0 in 2022, has tightened every year, and moves to 900 m in 2027). A horse that has not raced or trialled for 120 days must re-qualify too. Trial records appear in each horse's profile on this site."],
+  s:"2026 Jeju Racing Plan, pp.2, 21–23",f:["vet","sanctions","work"]},
+ {k:"vet",g:"welfare",q:["출전 전에 건강검사를 하나요?","Are horses vet-checked before racing?"],t:["마체검사","Veterinary checks"],
+  b:["네, 여러 번 합니다. 120일 이상 쉬었거나 수의위원이 지정한 말은 출전신청 전에 진료실에서 마체검사를 받아야 하고, 떨어지면 신청할 수 없습니다. 경주 당일에는 출발 3시간 전에 전 출전마가 경주 전 마체검사를 받고, 경주 직후에도 전 두수가 검사를 받습니다. 심판위원이 지정한 말은 따로 검사해 결과를 심판에게 알립니다. 검사에서 떨어진 말은 출전취소나 경주제외가 됩니다.",
+     "Yes, several times. A horse that has been off for 120 days or more, or one the vets have flagged, must pass a clinic check before it can even be entered. On race day every runner is examined three hours before the race and again straight after it. Horses named by the stewards get an extra check and the result goes to the stewards. A horse that fails is scratched."],
+  s:"2026 Jeju Racing Plan, p.24",f:["drugtest","welfare","trials"]},
+ {k:"welfare",g:"welfare",q:["말 복지는 어떻게 지켜지나요?","How is horse welfare protected?"],t:["말 복지 가이드라인","Horse welfare guidelines"],
+  b:["한국마사회 말 복지 가이드라인(2017년 제정, 2025년 10월 3차 개정)은 동물의 5대 자유(배고픔·갈증, 불편함, 고통·상처·질병, 정상 행동 표현, 공포·스트레스로부터의 자유)를 기본 원칙으로 삼고, 상업적 이익보다 말의 건강을 우선하도록 합니다. 운동능력을 바꾸거나 이상을 감추는 약물은 금지되고, 치료나 휴식이 필요한 말은 출전시키지 않아야 합니다. 은퇴경주마 가이드라인(2021년 제정, 2025년 개정)은 마주가 은퇴 후 용도(승용·번식 등)를 미리 준비하고 말 등록기관에 신고하도록 하며, 한국마사회는 은퇴마 이력 데이터베이스와 재훈련 지원을 운영합니다.",
+     "KRA's Horse Welfare Guidelines (first issued 2017, third revision October 2025) are built on the five freedoms: from hunger and thirst, from discomfort, from pain, injury and disease, to express normal behaviour, and from fear and distress. They put the horse's health ahead of commercial interest, ban any drug that alters performance or masks a problem, and say a horse needing treatment or rest must not be raced. The Retired Racehorse Guidelines (2021, revised 2025) make owners plan a horse's second career, in riding or breeding for example, and report its retirement to the registry; the KRA keeps a database of retired horses and supports retraining."],
+  s:"2026 Jeju Racing Plan, pp.46–53",f:["vet","drugtest","horses"]},
+ {k:"sanctions",g:"welfare",q:["출발을 거부하는 말은 어떻게 되나요?","What happens to a horse that refuses to start?"],t:["악벽마와 능력부진마 제재","Bad habits and poor performers"],
+  b:["게이트에서 3초 이상 고착하거나 반복해서 고착하면 출전정지 3개월에 출발심사 2회 연속 합격, 주행심사 2회 연속 합격이 필요합니다. 3초 미만이면 1~3개월입니다. 주행 중 멈추거나 반복적으로 주행을 거부해도 출전정지 3개월과 주행심사 2회입니다. 경주에서 53마신 이상 뒤지면 주행심사와 출전정지 1개월(두 번째는 2개월 이상), 40~53마신이면 주행심사를 받습니다. 800m 경주에서 1분 10.0초를 넘겨도 주행심사 대상입니다. 심판위원은 사례별로 달리 판단할 수 있습니다.",
+     "A horse that sticks in the gate for three seconds or more, or does so repeatedly, is stood down for three months and must then pass two barrier trials and two qualifying trials in a row; under three seconds it is one to three months. Stopping or repeatedly refusing to run brings three months and two trials. A horse beaten 53 lengths or more must re-qualify and is stood down for one month (two months or more the second time); 40 to 53 lengths means a trial. Running slower than 1:10.0 in an 800 m race also triggers a trial. The stewards may decide differently case by case."],
+  s:"2026 Jeju Racing Plan, p.54",f:["trials","ratingmoves"]},
+ {k:"work",g:"welfare",q:["조교 기록은 어떻게 읽나요?","How do I read the workout data?"],t:["조교(훈련) 기록 읽는 법","Reading the workout data"],
+  b:["제주 경주마는 매일 새벽 경주로에서 조교를 받고, 기록에는 날짜, 훈련 시간(분), 누가 탔는지(기수·조교사·관리사)가 남습니다. 해외처럼 몇 m를 몇 초에 달렸는지는 공개되지 않아서, 평소보다 많이 또는 적게 탔는지, 이번에 탈 기수가 직접 조교에 올라탔는지를 봅니다. 출전 신청 전 2주간 5회 이상 조교는 의무라, 출전마는 기본 조교량은 채우고 나옵니다. 말 프로필의 '최근 조교' 막대와 스토리의 '주의할 점'에 나옵니다.",
+     "Jeju horses work on the track most mornings. The public record shows the date, minutes on the track and who rode (jockey, trainer or groom). Clockings over set distances are not published as they are abroad, so the useful signals are whether a horse did more or less than usual and whether today's jockey rode it in work. At least five workouts in the two weeks before entry are compulsory, so every runner meets a baseline. See the 'Recent workouts' bars in each horse's profile and the watch-outs in each race story."],
+  s:"KRA daily workout data · 2026 Jeju Racing Plan, p.28",f:["trials","card"]}
+];
+const GUIDE_TOUR=["horses","class","weight","colors","timeline","big"];
+const PRIMER=GUIDE.map(c=>({k:c.k,t:c.t,b:c.b,s:c.s}));
 const GLKEY={work:"work",class:"class",rating:"class",weight:"weight",apprentice:"weight",trial:"trials",breed:"horses",prize:"prize",distance:"distance",card:"card"};
-Object.assign(T.ko,{brand:"제주경마",nav:{card:"레이스카드",results:"경주 결과",model:"모델 성적","101":"JEJU 101"},homeKicker:"제주경마공원 · 한국 조랑말 경주",homeTitle:"제주경마, 처음이라도 읽히게",homeLede:"서러브레드만 보던 분을 위한 제주 조랑말 경주 안내서입니다. 다가오는 출전표, 지난 결과, 그리고 규칙을 한눈에.",homeCards:{card:["다가오는 경주의 출전표와 경주별 스토리, 모델 순위, 말·기수·조교사 기록을 봅니다.","레이스카드 보기"],results:["지난 한 달 경주 결과와 구간별 전개를 트랙 위에서 다시 봅니다.","결과 보기"],"101":["등급, 레이팅, 부담중량, 상금, 심사 제도까지 처음 보는 분을 위한 짧은 카드 모음.","입문서 읽기"]},nextMeet:d=>`다음 경주일 ${d}`,lastMeet:d=>`최근 결과 ${d}`,cards:n=>`카드 ${n}장`,racesN:n=>`${n}경주`,noResults:"아직 불러온 경주 결과가 없습니다.",heroSub:(d,n)=>`다음 경주일 ${d} · ${n}경주 · 제주경마공원`,heroCta:["레이스카드 보기","제주경마 입문"],explore:"무엇을 보시겠어요?",exploreLede:"다가오는 출전표, 지난 결과, 그리고 처음 보는 분을 위한 안내서.",footTitle:"제주경마 가이드",footOrg:"한국마사회 · 제주경마공원",footData:"데이터: 한국마사회 공공데이터(data.go.kr) · 규칙: 2026년 제주경마 시행계획",footNote:"비공식 안내 페이지입니다. 베팅은 각 지역의 법률에 따르세요.",discFull:"비공식 안내 · 순위는 공공데이터로 계산한 추정치이며 팁이 아닙니다 · 베팅은 각 지역의 법률에 따르세요",discShort:"비공식 안내 · 팁 아님 · 베팅은 현지 법률에 따름",estTag:"데이터 추정 · 비공식",estTip:"순위·승률·예상 전개는 공공데이터로 자동 계산한 추정치입니다. 예측이나 팁, 조언이 아니며 데이터가 늦거나 빠질 수 있습니다.",footDisc:"이 페이지는 비공식 안내입니다. 순위, 승률, 예상 전개는 공공데이터로 자동 계산한 추정치이며 예측, 팁, 조언이 아닙니다. 데이터는 늦거나 빠질 수 있으며, 공식 출마표·경주 결과·배당은 경마장이 발표한 것을 기준으로 합니다.",footLaw:"베팅은 각 지역의 법률에 따르세요.",footBet:"책임감 있게 즐기세요.",storyTab:"스토리",primerBtn:"제주경마 입문",primerTitle:"제주경마 입문",primerLede:"외국에서 처음 보시는 분을 위한 짧은 안내입니다. 숫자는 한국마사회 「2026년 제주경마 시행계획」 기준입니다."});
-Object.assign(T.en,{brand:"Jeju Racing",nav:{card:"Race Card",results:"Results",model:"Model record","101":"Jeju 101"},homeKicker:"Jeju Racecourse · Korean pony racing",homeTitle:"Jeju racing, explained for first-timers",homeLede:"A guide to Korean pony racing for punters who know Thoroughbreds. Upcoming race cards, past results, and how it all works.",homeCards:{card:["Upcoming race cards with a story for each race, model rankings, and horse, jockey and trainer records.","Open the race card"],results:["Results from the past month, with the pace of each race replayed on the track.","See results"],"101":["Classes, ratings, weights, prize money and trials: short cards for newcomers.","Read the primer"]},nextMeet:d=>`Next meeting ${d}`,lastMeet:d=>`Latest results ${d}`,cards:n=>`${n} cards`,racesN:n=>`${n} races`,noResults:"No results loaded yet.",heroSub:(d,n)=>`Next meeting ${d} · ${n} races · Jeju Racecourse`,heroCta:["Open race card","Jeju 101"],explore:"Where to start",exploreLede:"Upcoming race cards, past results, and a primer for first-time viewers.",footTitle:"Jeju Racing Guide",footOrg:"Korea Racing Authority · Jeju Racecourse",footData:"Data: KRA open data (data.go.kr) · Rules: 2026 Jeju Racing Plan",footNote:"Unofficial guide. Wagering is subject to the laws of your jurisdiction.",discFull:"Unofficial guide · Rankings are data-based estimates, not tips · Wagering is subject to the laws of your jurisdiction",discShort:"Unofficial guide · Not tips · Wagering subject to local law",estTag:"Data estimate · Unofficial",estTip:"Rankings, win % and race-flow estimates are calculated automatically from public data. They are not predictions, tips or advice, and data may be delayed or incomplete.",footDisc:"This is an unofficial guide. Rankings, win percentages and race-flow estimates are calculated automatically from public data and are not predictions, tips or advice. Data may be delayed or incomplete; official race cards, results and dividends are those published by the racecourse.",footLaw:"Wagering is subject to the laws of your jurisdiction.",footBet:"Please bet responsibly.",storyTab:"Story",primerBtn:"Jeju 101",primerTitle:"Jeju racing 101",primerLede:"A short guide for first-time viewers. Figures are from KRA's 2026 Jeju Racing Plan."});
+Object.assign(T.ko,{brand:"제주경마",nav:{card:"레이스카드",results:"경주 결과",model:"모델 성적","101":"JEJU 101"},homeKicker:"제주경마공원 · 한국 조랑말 경주",homeTitle:"제주경마, 처음이라도 읽히게",homeLede:"서러브레드만 보던 분을 위한 제주 조랑말 경주 안내서입니다. 다가오는 출전표, 지난 결과, 그리고 규칙을 한눈에.",homeCards:{card:["다가오는 경주의 출전표와 경주별 스토리, 모델 순위, 말·기수·조교사 기록을 봅니다.","레이스카드 보기"],results:["지난 한 달 경주 결과와 구간별 전개를 트랙 위에서 다시 봅니다.","결과 보기"],"101":["등급, 중량, 큰 경주, 경주일 진행, 말 복지까지 질문을 고르면 가이드가 답합니다.","가이드에게 묻기"]},nextMeet:d=>`다음 경주일 ${d}`,lastMeet:d=>`최근 결과 ${d}`,cards:n=>`주제 ${n}개`,racesN:n=>`${n}경주`,noResults:"아직 불러온 경주 결과가 없습니다.",heroSub:(d,n)=>`다음 경주일 ${d} · ${n}경주 · 제주경마공원`,heroCta:["레이스카드 보기","제주경마 입문"],explore:"무엇을 보시겠어요?",exploreLede:"다가오는 출전표, 지난 결과, 그리고 처음 보는 분을 위한 안내서.",footTitle:"제주경마 가이드",footOrg:"한국마사회 · 제주경마공원",footData:"데이터: 한국마사회 공공데이터(data.go.kr) · 규칙: 2026년 제주경마 시행계획",footNote:"비공식 안내 페이지입니다. 베팅은 각 지역의 법률에 따르세요.",discFull:"비공식 안내 · 순위는 공공데이터로 계산한 추정치이며 팁이 아닙니다 · 베팅은 각 지역의 법률에 따르세요",discShort:"비공식 안내 · 팁 아님 · 베팅은 현지 법률에 따름",estTag:"데이터 추정 · 비공식",estTip:"순위·승률·예상 전개는 공공데이터로 자동 계산한 추정치입니다. 예측이나 팁, 조언이 아니며 데이터가 늦거나 빠질 수 있습니다.",footDisc:"이 페이지는 비공식 안내입니다. 순위, 승률, 예상 전개는 공공데이터로 자동 계산한 추정치이며 예측, 팁, 조언이 아닙니다. 데이터는 늦거나 빠질 수 있으며, 공식 출마표·경주 결과·배당은 경마장이 발표한 것을 기준으로 합니다.",footLaw:"베팅은 각 지역의 법률에 따르세요.",footBet:"책임감 있게 즐기세요.",storyTab:"스토리",primerBtn:"제주경마 입문",primerTitle:"제주 가이드에게 물어보세요",primerLede:"처음 보시는 분을 위한 질문과 답. 궁금한 걸 고르면 2026년 제주경마 시행계획에서 정리한 답이 나옵니다."});
+Object.assign(T.en,{brand:"Jeju Racing",nav:{card:"Race Card",results:"Results",model:"Model record","101":"Jeju 101"},homeKicker:"Jeju Racecourse · Korean pony racing",homeTitle:"Jeju racing, explained for first-timers",homeLede:"A guide to Korean pony racing for punters who know Thoroughbreds. Upcoming race cards, past results, and how it all works.",homeCards:{card:["Upcoming race cards with a story for each race, model rankings, and horse, jockey and trainer records.","Open the race card"],results:["Results from the past month, with the pace of each race replayed on the track.","See results"],"101":["Classes, weights, big races, race day and welfare: pick a question and the guide answers.","Ask the guide"]},nextMeet:d=>`Next meeting ${d}`,lastMeet:d=>`Latest results ${d}`,cards:n=>`${n} topics`,racesN:n=>`${n} races`,noResults:"No results loaded yet.",heroSub:(d,n)=>`Next meeting ${d} · ${n} races · Jeju Racecourse`,heroCta:["Open race card","Jeju 101"],explore:"Where to start",exploreLede:"Upcoming race cards, past results, and a primer for first-time viewers.",footTitle:"Jeju Racing Guide",footOrg:"Korea Racing Authority · Jeju Racecourse",footData:"Data: KRA open data (data.go.kr) · Rules: 2026 Jeju Racing Plan",footNote:"Unofficial guide. Wagering is subject to the laws of your jurisdiction.",discFull:"Unofficial guide · Rankings are data-based estimates, not tips · Wagering is subject to the laws of your jurisdiction",discShort:"Unofficial guide · Not tips · Wagering subject to local law",estTag:"Data estimate · Unofficial",estTip:"Rankings, win % and race-flow estimates are calculated automatically from public data. They are not predictions, tips or advice, and data may be delayed or incomplete.",footDisc:"This is an unofficial guide. Rankings, win percentages and race-flow estimates are calculated automatically from public data and are not predictions, tips or advice. Data may be delayed or incomplete; official race cards, results and dividends are those published by the racecourse.",footLaw:"Wagering is subject to the laws of your jurisdiction.",footBet:"Please bet responsibly.",storyTab:"Story",primerBtn:"Jeju 101",primerTitle:"Ask the Jeju Guide",primerLede:"Questions and answers for first-time viewers. Pick a question and get an answer drawn from KRA's 2026 Jeju Racing Plan."});
 function primerHtml(open){
   const t=T[lang], i=lang==="ko"?0:1;
   return `<section><h3>${t.primerTitle}</h3><p class="chnote">${t.primerLede}</p></section>`+PRIMER.map(c=>
