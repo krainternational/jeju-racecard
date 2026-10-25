@@ -766,13 +766,13 @@ const TERMS={
      ["핸디캡","잘 달리는 말에 더 무거운 부담중량을 주어 실력 차를 줄이는 방식입니다."],
      ["별정","나이, 성별, 수득상금 등 미리 정한 규칙으로 부담중량을 매기는 방식입니다."],
      ["주로 상태 · 함수율","모래 주로에 물기가 얼마나 있는지를 %로 표시합니다. 물기가 많을수록 주로가 단단해져 기록이 빨라지는 경향이 있습니다."],
-     ["제주마 · 한라마","제주경마장에는 천연기념물 제주마와 제주마 혈통이 섞인 한라마가 출전합니다. 서울·부경의 더러브렛보다 체구가 작습니다."]],
+     ["제주마","제주경마에서 뛰는 말은 대부분 천연기념물 제주마입니다. 서울·부경의 더러브렛보다 체구가 작습니다. 한국마사회 마필 정보에는 더러브렛, 더러브렛계종, 소형마, 중형마 같은 다른 품종 표시도 일부 나옵니다."]],
  en:[["Class","Race level set by rating band. Class 1 is the top; higher numbers are lower grades."],
      ["Rating (R)","A numeric ability score. R61–80 means only horses rated 61 to 80 may enter. R0–0 is for unrated newcomers or maidens."],
      ["Handicap","Better horses carry more weight to even out the field."],
      ["Set weights","Weights assigned by fixed rules such as age, sex, and earnings."],
      ["Going · moisture","Moisture content of the sand track, in percent. Wetter sand packs firmer and often runs faster."],
-     ["Jeju & Halla horses","Jeju races feature the native Jeju pony (a natural monument) and the Halla horse, a Jeju–Thoroughbred cross. Both are smaller than the Thoroughbreds raced in Seoul and Busan."]]
+     ["Jeju pony","Most horses in Jeju races are the native Jeju pony, a designated natural monument. They are smaller than the Thoroughbreds raced in Seoul and Busan. KRA's horse data also lists a few other breed codes, such as Thoroughbred, 더러브렛계종, small horse and medium horse."]]
 };
 
 const toHorse=a=>({raceNo:a[0],rcptNo:a[1],hrnm:a[2],gndr:a[3],ag:a[4],ratg:a[5],trarNm:a[6],ownerNm:a[7],prds:a[8],c6:a[9],c1y:a[10],career:a[11]});
@@ -1034,7 +1034,7 @@ const toRunner=a=>({raceNo:a[0],no:a[1],hrnm:a[2],gndr:a[3],ag:a[4],wgt:a[5],jck
 let runs=RUN_SAMPLE.map(toRunner), view="story", rsel=null;
 const recStr=r=>`${r[0]}전 ${r[1]}-${r[2]}-${r[3]}`, recStrEn=r=>`${r[0]} starts, ${r[1]}-${r[2]}-${r[3]}`;
 const pct=(a,b)=>b?Math.round(a/b*100):0;
-const kdName=k=>({"제":lang==="ko"?"제주마":"Jeju pony","한":lang==="ko"?"한라마":"Halla horse"})[k]||k;
+const kdName=k=>({"제":lang==="ko"?"제주마":"Jeju pony"})[k]||k;
 
 /* ---- 출전표(API26_2) → 경주일 묶음 ---- */
 const enName=new Map(), enPerson=new Map();
@@ -1176,7 +1176,7 @@ const COLOR={"밤":"Bay","갈":"Brown","흑갈":"Dark bay/brown","흑":"Black","
 const fdate=d=>{d=String(d||"");return /^\d{8}$/.test(d)?`${d.slice(0,4)}.${d.slice(4,6)}.${d.slice(6)}`:"–";};
 function infoCard(i){
   const t=T[lang], ko=lang==="ko";
-  const breed=ko?i.breed:({"제주마":"Jeju pony","한라마":"Halla horse","더러브렛":"Thoroughbred","소형마":"Small horse","중형마":"Medium horse"})[i.breed]||i.breed;
+  const breed=ko?i.breed:({"제주마":"Jeju pony","더러브렛":"Thoroughbred","더러브렛계종":"Thoroughbred-line","소형마":"Small horse","중형마":"Medium horse"})[i.breed]||i.breed;
   const sex=ko?i.sex:({"수":"Colt/horse","암":"Filly/mare","거":"Gelding"})[i.sex]||i.sex;
   const color=ko?i.color:(COLOR[i.color]||i.color);
   return `<div class="profile">
@@ -1321,7 +1321,7 @@ function drawerHorse(name){
   const field=h&&h.jck?runs.filter(x=>x.raceNo==h.raceNo):[];
   const race=h&&races.find(r=>r.raceNo==h.raceNo);
   const sexName={"수":lang==="ko"?"수말":"Colt/horse","암":lang==="ko"?"암말":"Filly/mare","거":lang==="ko"?"거세마":"Gelding"}[h?h.gndr:info?.sex]||"";
-  const breed=info?(lang==="ko"?info.breed:({"제주마":"Jeju pony","한라마":"Halla horse","더러브렛":"Thoroughbred","소형마":"Small horse","중형마":"Medium horse"})[info.breed]||info.breed):kdName(h?.kd||"");
+  const breed=info?(lang==="ko"?info.breed:({"제주마":"Jeju pony","더러브렛":"Thoroughbred","더러브렛계종":"Thoroughbred-line","소형마":"Small horse","중형마":"Medium horse"})[info.breed]||info.breed):kdName(h?.kd||"");
   const head=`<div class="dh"><div class="eyebrow">${t.dHorse}</div><h2>${esc(dname(name))}${lang==="en"?` <span class="eng">${esc(name)}</span>`:info?.hrEngNm?` <span class="eng">${esc(titleCase(info.hrEngNm))}</span>`:""}</h2>
     <div class="ps">${esc(breed)} · ${esc(sexName)}${h?` · ${lang==="ko"?h.ag+"세":"age "+h.ag}`:""}${race?` · ${rL(race.raceNo)} ${t.saddle} ${h.no}`:""}</div>
     ${h&&h.jck?`<div class="chips">${chipBtn("jockey",h.jck,jkTag(h.jck))}${chipBtn("trainer",h.trar,trTag(h.trar))}</div>`:""}</div>`;
@@ -1597,9 +1597,9 @@ const GUIDE=[
   b:["제주경마공원은 제주시 애월읍에 있는 1,610m 모래 주로 경마장입니다. 한국에서 유일하게 토종 조랑말 경주를 엽니다. 2026년에는 1월 2일부터 12월 25일까지 약 100일, 703경주를 시행하고 전 경주를 중계합니다. 보통 금·토요일에 열리고, 월요일 공휴일 3일(3/2, 8/17, 10/5)에도 경주가 있습니다.",
      "Jeju Racecourse, in Aewol on the island's north-west coast, is a 1,610 m sand track and the only place in Korea that races the native pony. In 2026 it races about 100 days and 703 races from 2 Jan to 25 Dec, and every race is broadcast. Meetings are normally Friday and Saturday, plus three Monday public holidays (2 Mar, 17 Aug, 5 Oct)."],
   s:"2026 Jeju Racing Plan, pp.4–6",f:["horses","calendar","compare"]},
- {k:"horses",g:"basics",q:["어떤 말이 달리나요?","What kind of horses race?"],t:["경주마: 제주마와 한라마","The horses: Jeju pony and Halla horse"],
-  b:["제주경마장에는 천연기념물 제주마와, 제주마 혈통이 섞인 한라마가 출전합니다. 서울·부경의 더러브렛보다 체구가 작고, 경주 기록도 그만큼 느립니다. 이 페이지의 '제주마 / 한라마' 표시는 한국마사회 마필 정보의 마종 코드에서 가져옵니다.",
-     "Jeju races feature the native Jeju pony (a natural monument) and the Halla horse, a Jeju–Thoroughbred cross. Both are smaller than the Thoroughbreds raced in Seoul and Busan, and times are slower to match. The 'Jeju pony / Halla horse' label on this site comes from the breed code in KRA's horse data."],
+ {k:"horses",g:"basics",q:["어떤 말이 달리나요?","What kind of horses race?"],t:["경주마: 대부분 제주마","The horses: mostly Jeju ponies"],
+  b:["제주경마에서 뛰는 말은 대부분 천연기념물 제주마입니다. 서울·부경의 더러브렛보다 체구가 작아서 경주 기록 수준도 다릅니다. 한국마사회 마필 정보에는 더러브렛, 더러브렛계종, 소형마, 중형마 같은 다른 품종 표시도 일부 나옵니다. 이 페이지의 품종 표시는 한국마사회 마필 정보에서 가져옵니다.",
+     "Most horses in Jeju races are the native Jeju pony, a designated natural monument. They are smaller than the Thoroughbreds raced in Seoul and Busan, so race times run at a different level. KRA's horse data also lists a few other breed codes, such as Thoroughbred, Thoroughbred-line (더러브렛계종), small horse and medium horse. The breed label on this site comes from KRA's horse data."],
   s:"KRA horse data (breed code)",f:["class","distance","welfare"]},
  {k:"calendar",g:"basics",q:["2026년 경주는 언제 있나요?","When does Jeju race in 2026?"],t:["2026년 일정","The 2026 calendar"],
   b:["시즌은 1월 2일(금)~12월 25일(금)이고 12월 26일은 취소 경주를 보전하는 예비경마일입니다. 휴장은 설(2/20~22), 혹서기(7/31~8/2), 추석(9/25~27) 세 번입니다. 월별 경주 수는 1월 65 · 2월 46 · 3월 56 · 4월 56 · 5월 75 · 6월 60 · 7월 60 · 8월 65 · 9월 43 · 10월 77 · 11월 54 · 12월 46입니다. 8월 7일~9월 6일 5주간은 금·토 야간경마로 열렸습니다.",
