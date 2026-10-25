@@ -786,7 +786,7 @@ const fmt=n=>n.toLocaleString(lang==="ko"?"ko-KR":"en-US");
 const tr=s=>lang==="en"&&s?(EN[s]??s):s;
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
-function classLabel(c){ if(lang==="ko") return c; const m=String(c).match(/(\d+)/); return m?`Class ${m[1]}`:c; }
+function classLabel(c){ const o=String(c).replace(/^제(?=[A-Za-z])/,""); if(lang==="ko") return o; const m=o.match(/(\d+)/); return m?`Class ${m[1]}`:o; }
 function goingInfo(g){ const m=String(g||"").match(/^([^(]+)\(?(\d+)?/); return {name:(m?m[1]:g).trim(),pct:m&&m[2]?m[2]:""}; }
 function parseDate(r){ const s=String(r.raceDt||""); return {y:s.slice(0,4),m:+s.slice(4,6),d:+s.slice(6,8),dw:r.raceDotw||""}; }
 function ratingLabel(s){ if(!s||s==="-")return "-"; if(s==="R0~0") return lang==="ko"?"신마·미승리마 (R0)":"Unrated (R0)"; return s.replace("~",lang==="ko"?"~":"–"); }
