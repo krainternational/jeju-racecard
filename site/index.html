@@ -508,17 +508,7 @@ html[lang="ko"] h1,html[lang="ko"] .rno,html[lang="ko"] .rhead h2,html[lang="ko"
   <aside id="drawer" class="drawer" hidden aria-label="Details"><button type="button" id="dclose" class="dclose" aria-label="Close">×</button><div id="dbody" class="dbody"></div></aside>
   <div id="tip" class="tip" hidden></div>
 
-  <section class="load">
-    <h2 id="t-load"></h2>
-    <p id="t-loadhelp"></p>
-    <textarea id="json" spellcheck="false" aria-label="API JSON"></textarea>
-    <div class="actions">
-      <button class="btn" type="button" id="loadBtn"></button>
-      <label class="btn ghost file" for="fileIn" id="fileLbl"></label><input type="file" id="fileIn" accept=".json,.xml,.txt" hidden>
-      <button class="btn ghost" type="button" id="resetBtn"></button>
-      <span class="msg" id="msg" role="status"></span>
-    </div>
-  </section>
+  <span class="msg" id="msg" role="status" hidden></span>
 </div>
 <footer class="foot" id="foot"></footer>
 
@@ -795,7 +785,7 @@ const ROUTES=["card","results","101"]; const NAVR=["card","results","101"]; /* '
 function curRoute(){ const h=location.hash.replace(/^#\/?/,"").split("/")[0]; return NAVR.includes(h)?h:"home"; }
 function route(){
   const r=curRoute(); $("home").hidden=r!=="home"; document.querySelector(".wrap").hidden=r==="home"; $("pgCard").hidden=r!=="card"; $("pgResults").hidden=r!=="results"; $("p101").hidden=r!=="101"; $("pgModel").hidden=r!=="model"; if(r==="model") renderModelPage();
-  $("gloss").hidden=r!=="card"; document.querySelector(".load").hidden=!(r==="card"||r==="results");
+  $("gloss").hidden=r!=="card";
   if(r==="results"&&!resGroups().length){ $("results").hidden=false; $("results").innerHTML=`<h2>${T[lang].resTitle}</h2><p class="noent">${T[lang].noResults}</p>`; }
   document.querySelectorAll("#navtabs a").forEach(a=>a.setAttribute("aria-current",a.dataset.r===r?"page":"false"));
   if(drawerState) closeDrawer();
@@ -825,8 +815,7 @@ function render101(){ const t=T[lang], i=lang==="ko"?0:1;
 function render(){
   const t=T[lang]; document.documentElement.lang=lang;
   $("lang-ko").setAttribute("aria-pressed",lang==="ko"); $("lang-en").setAttribute("aria-pressed",lang==="en");
-  ["eyebrow","gloss","load","loadhelp"].forEach(k=>$("t-"+k).textContent=t[k]);
-  $("loadBtn").textContent=t.loadBtn; $("fileLbl").textContent=t.fileBtn; $("resetBtn").textContent=t.resetBtn;
+  ["eyebrow","gloss"].forEach(k=>$("t-"+k).textContent=t[k]);
   const r0=races[0], d=parseDate(r0), g=goingInfo(r0.going);
   $("dayTitle").textContent=t.title(d);
   const dy=days.get(curDay);
@@ -1886,11 +1875,8 @@ function runIngest(raw){
   try{ const r=ingestText(raw); if(r&&r.empty){m.textContent=T[lang].empty;m.className="msg err";return;} render(); m.textContent=r; }
   catch(e){ m.textContent=T[lang].err; m.className="msg err"; }
 }
-$("loadBtn").onclick=()=>runIngest($("json").value);
-$("fileIn").onchange=e=>{const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>runIngest(String(rd.result)); rd.readAsText(f,"utf-8"); e.target.value="";};
 function initDays(){ days.clear(); putDay({date:"20240817",races:SAMPLE.slice(),runs:RUN_SAMPLE.map(toRunner),reg:REG_SAMPLE.map(toHorse),sheet:false,sample:true});
   sheetToDays(SHEET_SAMPLE).forEach(putDay); mergeVet(LIVE_RUNS); useDay(pickDefaultDay()); }
-$("resetBtn").onclick=()=>{races=SAMPLE.slice();reg=REG_SAMPLE.map(toHorse);runs=RUN_SAMPLE.map(toRunner);results=RES_SAMPLE.map(toRes);pace=PACE_SAMPLE.map(toPace);resKey=null;resSel=null;hinfo=new Map();addInfo(HINFO_SAMPLE);initDays();$("msg").textContent="";render();};
 initDays(); render();
 // 자동 업데이트: 같은 주소에 올라간 latest.json(수집기가 예약 실행으로 갱신)을 열 때마다 불러온다.
 // 없으면(예: 미리보기 환경) 조용히 내장 샘플 데이터를 그대로 쓴다.
