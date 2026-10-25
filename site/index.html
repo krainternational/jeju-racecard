@@ -456,17 +456,60 @@ tr.grp.s-front td{border-left-color:#d3262b}tr.grp.s-stalk td{border-left-color:
 h1,.rno,.rhead h2,section.gloss h2,section.load h2,section.results>h2,.rchip,.dh h2,.profile h4,.hero.small h1,.p101 .pcard h2,.p101 .gloss h2,.mstats .stat .v,.hcard h2,.hsec .kick{font-family:var(--body);font-weight:700;font-style:normal;letter-spacing:-.01em}
 .rchip{font-size:15px;font-weight:600}
 .day h1{font-size:clamp(28px,6vw,42px)}.rno{font-size:21px}.rhead h2{font-size:clamp(24px,5vw,32px)}.hero.small h1{font-size:clamp(30px,6.5vw,46px)}
-.chat{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:grid}
+.chat{background:var(--surface);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:grid;box-shadow:0 18px 40px -24px rgba(10,30,60,.35)}
+/* ---- 말마 3D 스테이지 ---- */
+.stage{position:relative;height:230px;background:radial-gradient(120% 90% at 50% 15%,#a4f2ff,#72f0ff 58%,#52d6ec);overflow:hidden;perspective:900px;box-shadow:inset 0 -40px 60px rgba(0,80,110,.14)}
+.stage::after{content:"";position:absolute;left:0;right:0;bottom:0;height:60px;background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,255,255,.35));pointer-events:none}
+.stage .brand{position:absolute;top:12px;right:16px;font-family:var(--cond);font-weight:800;letter-spacing:.06em;color:#1d2a36;line-height:1;text-align:center}
+.stage .brand small{display:block;font-size:9px;letter-spacing:.2em;margin-top:2px;color:#2d3d4c}
+.stage .say{position:absolute;left:16px;top:14px;max-width:46%;background:#fff;color:#1d2a36;border-radius:16px;padding:10px 14px;font-size:14px;line-height:1.45;box-shadow:0 10px 24px -8px rgba(0,70,100,.4),inset 0 1px 0 #fff;transform-origin:0 100%;animation:bPop .55s cubic-bezier(.2,.9,.25,1.2) both}
+.stage .say::after{content:"";position:absolute;right:-10px;bottom:14px;border:10px solid transparent;border-left-color:#fff;border-bottom:0}
+.mascot{position:absolute;inset:0;display:grid;place-items:end center;transform-style:preserve-3d}
+svg.malma{width:min(440px,100%);height:100%;max-height:230px;overflow:visible;transform-style:preserve-3d;animation:mFloat 4s ease-in-out infinite}
+@keyframes mFloat{0%,100%{transform:translateY(0) rotateY(-6deg)}50%{transform:translateY(-6px) rotateY(6deg)}}
+.malma #mHead{transform-origin:220px 150px;animation:mTilt 5s ease-in-out infinite}
+@keyframes mTilt{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2.5deg)}}
+.malma #mEarL{transform-origin:184px 90px;animation:earL 5s ease-in-out infinite}
+.malma #mEarR{transform-origin:256px 90px;animation:earR 5s ease-in-out infinite .4s}
+@keyframes earL{0%,70%,100%{transform:rotate(0)}80%{transform:rotate(-12deg)}90%{transform:rotate(4deg)}}
+@keyframes earR{0%,70%,100%{transform:rotate(0)}80%{transform:rotate(12deg)}90%{transform:rotate(-4deg)}}
+.malma #mLids{transform-origin:220px 108px;animation:blink 4.6s infinite}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+.malma #mBody{transform-origin:220px 230px;animation:breath 3.2s ease-in-out infinite}
+@keyframes breath{0%,100%{transform:scale(1,1)}50%{transform:scale(1.015,.985)}}
+.malma #mTail{transform-origin:276px 212px;animation:tail 2.4s ease-in-out infinite}
+@keyframes tail{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(10deg)}}
+.malma #carrot{transform-origin:330px 250px;animation:cBob 3s ease-in-out infinite .6s}
+@keyframes cBob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-5px) rotate(3deg)}}
+.malma #cubes{transform-origin:86px 262px;animation:cWob 3.6s ease-in-out infinite 1s}
+@keyframes cWob{0%,100%{transform:rotate(0)}30%{transform:rotate(-2deg)}60%{transform:rotate(2deg)}}
+.malma .heart{opacity:0}
+/* 상태: 생각 중 */
+.chat.is-typing .malma #mHead{animation:mThink 1.1s ease-in-out infinite}
+@keyframes mThink{0%,100%{transform:rotate(-5deg) translateY(0)}50%{transform:rotate(5deg) translateY(-3px)}}
+.chat.is-typing .malma #mEarL,.chat.is-typing .malma #mEarR{animation-duration:1.2s}
+.chat.is-typing .malma #carrot{animation:cBob 1s ease-in-out infinite}
+.chat.is-typing .malma #mLids{animation:blink 1.3s infinite}
+.chat.is-typing .stage .think{opacity:1;transform:translateY(0)}
+.stage .think{position:absolute;left:58%;top:36px;display:flex;gap:5px;background:#fff;border-radius:14px;padding:9px 12px;box-shadow:0 8px 20px -6px rgba(0,70,100,.4);opacity:0;transform:translateY(8px);transition:.3s}
+.stage .think i{width:7px;height:7px;border-radius:50%;background:#7a8a99;animation:tp 1s infinite}.stage .think i:nth-child(2){animation-delay:.15s}.stage .think i:nth-child(3){animation-delay:.3s}
+/* 상태: 답변 완료 */
+.chat.is-answer .malma #mHead{animation:mNod .7s ease-in-out 2}
+@keyframes mNod{0%,100%{transform:rotate(0)}40%{transform:rotate(0) translateY(6px)}}
+.chat.is-answer .malma .heart{animation:hf 1.8s ease-out both}
+.chat.is-answer .malma .heart:nth-child(2){animation-delay:.25s}.chat.is-answer .malma .heart:nth-child(3){animation-delay:.5s}
+@keyframes hf{0%{opacity:0;transform:translateY(0) scale(.6)}20%{opacity:1}100%{opacity:0;transform:translateY(-60px) scale(1.1)}}
+@media (prefers-reduced-motion:reduce){.malma,.malma *,.stage .say,.bubble{animation:none!important}}
 .chathead{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--bg)}
 .chathead b{display:block;font-size:15px}.chathead small{color:var(--muted);font-size:12px}.chathead .qchip{margin-left:auto}
-.avatar{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--navy);color:#fff;flex:none}
+.avatar{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#b6f4ff,#62dff2);flex:none;box-shadow:0 4px 10px -3px rgba(0,70,100,.45),inset 0 1px 0 #fff;overflow:hidden}.avatar svg{width:34px;height:34px;overflow:visible}
 .chatlog{display:grid;gap:10px;padding:16px;max-height:min(70vh,760px);overflow:auto;scroll-behavior:smooth}
 .msg{display:flex;gap:8px;align-items:flex-end;max-width:min(720px,92%)}
 .msg.you{align-self:flex-end;flex-direction:row-reverse}
-.bubble{padding:10px 14px;border-radius:16px;font-size:15px;line-height:1.6;background:var(--bg);border:1px solid var(--line);border-bottom-left-radius:4px}
-.msg.you .bubble{background:var(--navy);color:#fff;border-color:var(--navy);border-bottom-left-radius:16px;border-bottom-right-radius:4px}
+.bubble{position:relative;padding:11px 15px;border-radius:18px;font-size:15px;line-height:1.6;background:linear-gradient(180deg,#fff,#eef7fb);border:1px solid #cfe6ef;border-bottom-left-radius:5px;box-shadow:0 1px 0 #fff inset,0 10px 22px -12px rgba(0,70,100,.45),0 2px 0 #c2dbe6;transform-origin:0 100%;animation:bPop .5s cubic-bezier(.2,.9,.25,1.2) both;color:#1d2a36}@keyframes bPop{0%{opacity:0;transform:perspective(600px) rotateX(-28deg) translateY(10px) scale(.94)}100%{opacity:1;transform:perspective(600px) rotateX(0) translateY(0) scale(1)}}
+.msg.you .bubble{background:linear-gradient(180deg,#2a4a8e,#1a2f66);color:#fff;border-color:#14244f;border-bottom-left-radius:18px;border-bottom-right-radius:5px;transform-origin:100% 100%;box-shadow:0 1px 0 rgba(255,255,255,.25) inset,0 10px 22px -12px rgba(10,30,80,.6),0 2px 0 #0f1c40}
 .bubble .bt{display:block;margin-bottom:4px;font-size:16px}
-.bubble .src{display:block;margin-top:8px;font-size:12px;color:var(--muted)}
+.bubble .src{display:block;margin-top:8px;font-size:12px;color:#5f7280}
 .bubble.typing{display:flex;gap:4px;padding:14px 16px}.bubble.typing i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:tp 1s infinite}
 .bubble.typing i:nth-child(2){animation-delay:.15s}.bubble.typing i:nth-child(3){animation-delay:.3s}
 @keyframes tp{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
@@ -483,8 +526,10 @@ h1,.rno,.rhead h2,section.gloss h2,section.load h2,section.results>h2,.rchip,.dh
 .alltopics .terms{margin-top:12px}
 :root[data-theme="dark"] .qchip{color:#c9d4f5;border-color:#4a5a8a}:root[data-theme="dark"] .qchip:hover{background:#2a3a6a;color:#fff}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .qchip{color:#c9d4f5;border-color:#4a5a8a}:root:not([data-theme="light"]) .qchip:hover{background:#2a3a6a;color:#fff}}
-@media (max-width:640px){.chatlog{max-height:none;padding:12px}.msg{max-width:96%}.chatlog .chips{margin-left:0}.bubble{font-size:14px}}
+@media (max-width:640px){.chatlog{max-height:none;padding:12px}.msg{max-width:96%}.chatlog .chips{margin-left:0}.bubble{font-size:14px}.stage{height:190px}.stage .say{display:none}.stage .think{left:auto;right:18px;top:54px}.stage .brand{font-size:12px}svg.malma{max-height:190px}}
 .chathead .qchip{white-space:nowrap}
+:root[data-theme="dark"] .bubble{background:linear-gradient(180deg,#223247,#1a2838);border-color:#2f4158;color:#e6eef7;box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 10px 22px -12px rgba(0,0,0,.6)}:root[data-theme="dark"] .bubble .src{color:#9fb0c0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .bubble{background:linear-gradient(180deg,#223247,#1a2838);border-color:#2f4158;color:#e6eef7;box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 10px 22px -12px rgba(0,0,0,.6)}:root:not([data-theme="light"]) .bubble .src{color:#9fb0c0}}
 html[lang="ko"] .hero.small h1{font-family:var(--body);font-weight:700}
 </style>
 
@@ -838,10 +883,13 @@ document.querySelectorAll("#navtabs a").forEach(a=>a.addEventListener("click",()
 /* ---- JEJU 101: 질문 칩으로 진행하는 가이드 챗 (답은 GUIDE에서, AI 아님) ---- */
 var chatLog=[];            // [{k:topicKey}] 또는 {pick:groupKey} (그룹 펼침)
 var chatTour=-1;           // 투어 진행 위치 (-1: 아님)
-var chatTyping=false;
+var chatTyping=false; var chatAnswer=false;
 const gById=k=>GUIDE.find(c=>c.k===k);
 function guideT(){ const ko=lang==="ko"; return {
-  hello:ko?"안녕하세요! 제주경마 가이드입니다. 처음 보시나요? 아래에서 궁금한 걸 골라 주세요. 답은 2026년 제주경마 시행계획에서 미리 정리해 둔 내용이에요.":"Hi! I'm the Jeju Guide. First time watching Jeju racing? Pick a question below. My answers come from the 2026 Jeju Racing Plan, written up in advance.",
+  hello:ko?"안녕하세요, 저는 말마예요! 제주경마가 처음이신가요? 아래에서 궁금한 걸 골라 주세요. 답은 2026년 제주경마 시행계획에서 미리 정리해 둔 내용이에요.":"Hi, I'm Malma! First time watching Jeju racing? Pick a question below. My answers come from the 2026 Jeju Racing Plan, written up in advance.",
+  sayHi:ko?"안녕! 나는 말마. 궁금한 건 뭐든 골라 봐 🥕":"Hi! I'm Malma. Pick anything you're curious about 🥕",
+  sayAgain:ko?"또 궁금한 게 있으면 골라 줘!":"Pick another one if you're curious!",
+  sayThink:ko?"음… 잠깐만, 찾아볼게!":"Hmm… one sec, let me check!",
   tour:ko?"2분 입문 투어 시작":"Start the 2-minute intro",
   more:ko?"다른 주제 보기":"More topics",
   next:ko?"다음 →":"Next →",
@@ -853,8 +901,8 @@ function guideT(){ const ko=lang==="ko"; return {
   all:ko?"전체 주제 보기":"Browse all topics",
   allN:n=>ko?`주제 ${n}개 · 2026년 제주경마 시행계획 기준`:`${n} topics · from the 2026 Jeju Racing Plan`,
   src:ko?"출처":"Source",
-  note:ko?"가이드는 AI가 아닙니다. 답은 시행계획과 공공데이터에서 미리 정리한 내용이며, 세부 규정은 바뀔 수 있습니다.":"The guide is not AI. Answers are written in advance from the Racing Plan and public data, and rules can change.",
-  you:ko?"나":"You", guide:ko?"제주 가이드":"Jeju Guide",
+  note:ko?"말마는 AI가 아닙니다. 답은 시행계획과 공공데이터에서 미리 정리한 내용이며, 세부 규정은 바뀔 수 있습니다.":"Malma is not AI. Answers are written in advance from the Racing Plan and public data, and rules can change.",
+  you:ko?"나":"You", guide:ko?"말마":"Malma",
   gloss:ko?"용어 풀이":"Glossary"
 };}
 const srcL=x=>lang==="ko"?x.replace("2026 Jeju Racing Plan","2026년 제주경마 시행계획").replace("KRA horse data (breed code)","한국마사회 마필정보(마종 코드)").replace("KRA daily workout data","한국마사회 일일 조교 데이터").replace("KRA track reports","한국마사회 주로 상태 발표").replace(/pp?\./,"p."):x;
@@ -864,7 +912,8 @@ function render101(){ const t=T[lang], g=guideT(), i=lang==="ko"?0:1;
   const asked=new Set(chatLog.filter(m=>m.k).map(m=>m.k));
   const starter=["horses","class","weight","big","timeline","prize"];
   let html=`<div class="hero small"><div class="eyebrow">${t.nav["101"]}</div><h1>${t.primerTitle}</h1><p>${t.primerLede}</p></div>
-  <section class="chat" aria-label="Jeju Guide">
+  <section class="chat${chatTyping?" is-typing":""}${chatAnswer?" is-answer":""}" aria-label="Malma">
+    <div class="stage"><div class="mascot">${MALMA_SVG}</div><div class="say" key="${chatTyping?"t":chatLog.length?"a":"h"}">${chatTyping?g.sayThink:chatLog.length?g.sayAgain:g.sayHi}</div><div class="think"><i></i><i></i><i></i></div><div class="brand">MALMA<small>FRIENDS</small></div></div>
     <div class="chathead"><span class="avatar" aria-hidden="true">${PONY_SVG}</span><div><b>${g.guide}</b><small>${g.allN(GUIDE.length)}</small></div><button type="button" class="qchip ghost" id="chatReset">${g.reset}</button></div>
     <div class="chatlog" id="chatlog">
       <div class="msg guide"><span class="avatar" aria-hidden="true">${PONY_SVG}</span><div class="bubble">${g.hello}</div></div>
@@ -906,15 +955,23 @@ function render101(){ const t=T[lang], g=guideT(), i=lang==="ko"?0:1;
   box.querySelectorAll("[data-tour]").forEach(b=>b.onclick=()=>askGuide(GUIDE_TOUR[+b.dataset.tour],+b.dataset.tour));
   box.querySelectorAll("[data-more]").forEach(b=>b.onclick=()=>{chatLog.push({pick:1}); render101(); chatScroll();});
   box.querySelectorAll("[data-group]").forEach(b=>b.onclick=()=>{chatLog.push({group:b.dataset.group}); render101(); chatScroll();});
-  const r=$("chatReset"); if(r) r.onclick=()=>{chatLog=[]; chatTyping=false; render101();};
+  const r=$("chatReset"); if(r) r.onclick=()=>{chatLog=[]; chatTyping=false; chatAnswer=false; render101();};
 }
 function askGuide(k,tour,scroll){
   if(chatTyping) return;
-  chatLog.push(tour!=null?{k,tour}:{k}); chatTyping=true; render101(); chatScroll(scroll);
-  setTimeout(()=>{ chatTyping=false; render101(); chatScroll(scroll); },450+Math.random()*300);
+  chatLog.push(tour!=null?{k,tour}:{k}); chatTyping=true; chatAnswer=false; render101(); chatScroll(scroll);
+  setTimeout(()=>{ chatTyping=false; chatAnswer=true; render101(); chatScroll(scroll); setTimeout(()=>{chatAnswer=false; const c=document.querySelector(".chat"); if(c) c.classList.remove("is-answer");},2200); },650+Math.random()*350);
 }
 function chatScroll(toTop){ const l=$("chatlog"); if(!l) return; if(toTop){ const s=document.querySelector(".chat"); if(s) s.scrollIntoView({block:"start"}); } l.scrollTop=l.scrollHeight; }
-const PONY_SVG=`<svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><path fill="currentColor" d="M7 27c0-7 2-13 7-16l1-6 3 4 3-3 1 6c4 1 6 4 6 7 0 2-1 3-3 3-1 0-2-1-2-2l-2-1c-1 2-3 3-5 4-1 1-2 2-2 4H7z"/><circle cx="22" cy="14" r="1.3" fill="var(--navy)"/></svg>`;
+const MALMA_DEFS=`<defs><radialGradient id="gHead" cx="38%" cy="30%" r="75%"><stop offset="0" stop-color="#b89a7c"/><stop offset=".6" stop-color="#9a7a5d"/><stop offset="1" stop-color="#7a5c43"/></radialGradient><radialGradient id="gMuz" cx="40%" cy="30%" r="80%"><stop offset="0" stop-color="#6e5140"/><stop offset="1" stop-color="#4a3327"/></radialGradient><radialGradient id="gBody" cx="40%" cy="25%" r="80%"><stop offset="0" stop-color="#b59878"/><stop offset=".7" stop-color="#967659"/><stop offset="1" stop-color="#75573f"/></radialGradient><radialGradient id="gCar" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#ffb14d"/><stop offset=".6" stop-color="#ff8a1f"/><stop offset="1" stop-color="#e06a08"/></radialGradient><radialGradient id="gLeaf" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#b5ee5a"/><stop offset="1" stop-color="#6cbf2c"/></radialGradient><linearGradient id="gCube1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d6f7f0"/><stop offset="1" stop-color="#9fe3d6"/></linearGradient><linearGradient id="gCube2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#e6e6e6"/></linearGradient><linearGradient id="gCube3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd9e6"/><stop offset="1" stop-color="#ffb1c9"/></linearGradient><filter id="sh" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#004a66" flood-opacity=".25"/></filter><filter id="shS" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#004a66" flood-opacity=".22"/></filter></defs>`;
+const MALMA_HEAD=`<g id="mHead"><path id="mEarL" d="M172 92 q-10 -34 4 -56 q18 8 28 40z" fill="url(#gHead)"/><path id="mEarR" d="M268 92 q10 -34 -4 -56 q-18 8 -28 40z" fill="url(#gHead)"/><path d="M220 54 q66 0 66 62 q0 50 -22 72 q-20 20 -44 20 q-24 0 -44 -20 q-22 -22 -22 -72 q0 -62 66 -62z" fill="url(#gHead)"/><path d="M220 130 q40 0 46 30 q4 24 -16 38 q-14 10 -30 10 q-16 0 -30 -10 q-20 -14 -16 -38 q6 -30 46 -30z" fill="url(#gMuz)"/><path d="M206 186 q14 7 28 0" fill="none" stroke-width="2.6" opacity=".9"/><ellipse cx="204" cy="164" rx="4" ry="2.6" fill="#2b2b2b" stroke="none"/><ellipse cx="236" cy="164" rx="4" ry="2.6" fill="#2b2b2b" stroke="none"/><ellipse cx="172" cy="126" rx="9" ry="5" fill="#e98fa0" stroke="none" opacity=".85"/><ellipse cx="268" cy="126" rx="9" ry="5" fill="#e98fa0" stroke="none" opacity=".85"/><g id="mEyes"><path d="M178 108 q18 -16 36 0 q-18 14 -36 0z" fill="#3a2a1f"/><path d="M226 108 q18 -16 36 0 q-18 14 -36 0z" fill="#3a2a1f"/><ellipse cx="200" cy="110" rx="3.2" ry="2.6" fill="#fff" stroke="none"/><ellipse cx="248" cy="110" rx="3.2" ry="2.6" fill="#fff" stroke="none"/><g id="mLids"><path d="M178 108 q18 -16 36 0 q-18 2 -36 0z" fill="url(#gHead)"/><path d="M226 108 q18 -16 36 0 q-18 2 -36 0z" fill="url(#gHead)"/></g><path d="M178 108 q18 -16 36 0" fill="none" stroke-width="3"/><path d="M226 108 q18 -16 36 0" fill="none" stroke-width="3"/></g><ellipse cx="192" cy="78" rx="14" ry="8" fill="#fff" opacity=".2" stroke="none" transform="rotate(-20 192 78)"/></g>`;
+const MALMA_SVG=`<svg class="malma" viewBox="0 0 440 320" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${MALMA_DEFS}
+<ellipse cx="220" cy="300" rx="78" ry="12" fill="#0a5a74" opacity=".18"/><ellipse cx="330" cy="300" rx="34" ry="8" fill="#0a5a74" opacity=".16"/><ellipse cx="86" cy="300" rx="34" ry="8" fill="#0a5a74" opacity=".16"/>
+<g id="cubes" filter="url(#shS)" stroke="#2b2b2b" stroke-width="3" stroke-linejoin="round"><g transform="translate(60 230)"><rect width="52" height="52" rx="8" fill="url(#gCube3)"/><path d="M0 8 L10 -2 H62 L52 8 Z" fill="#ffc7d8"/><path d="M52 8 L62 -2 V44 L52 52 Z" fill="#f49ab6"/><circle cx="18" cy="24" r="2.2" fill="#2b2b2b" stroke="none"/><circle cx="34" cy="24" r="2.2" fill="#2b2b2b" stroke="none"/><path d="M22 34 q4 3 8 0" fill="none" stroke-width="2.2"/></g><g transform="translate(64 182)"><rect width="48" height="48" rx="8" fill="url(#gCube2)"/><path d="M0 8 L10 -2 H58 L48 8 Z" fill="#f4f4f4"/><path d="M48 8 L58 -2 V40 L48 48 Z" fill="#d2d2d2"/><circle cx="16" cy="22" r="2.2" fill="#2b2b2b" stroke="none"/><circle cx="32" cy="22" r="2.2" fill="#2b2b2b" stroke="none"/><path d="M20 31 q4 3 8 0" fill="none" stroke-width="2.2"/></g><g transform="translate(70 138)"><rect width="44" height="44" rx="8" fill="url(#gCube1)"/><path d="M0 8 L10 -2 H54 L44 8 Z" fill="#e4fbf6"/><path d="M44 8 L54 -2 V36 L44 44 Z" fill="#8fd6c8"/><circle cx="15" cy="20" r="2.2" fill="#2b2b2b" stroke="none"/><circle cx="29" cy="20" r="2.2" fill="#2b2b2b" stroke="none"/><path d="M18 29 q4 3 8 0" fill="none" stroke-width="2.2"/></g></g>
+<g id="carrot" filter="url(#shS)" stroke="#2b2b2b" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"><path d="M318 170 q-16 -22 -2 -40 q6 18 10 26 q2 -22 16 -30 q0 20 -4 30 q14 -14 30 -8 q-16 10 -24 22 Z" fill="url(#gLeaf)"/><path d="M306 172 h48 q6 0 4 8 l-20 102 q-2 10 -8 10 q-6 0 -8 -10 l-20 -102 q-2 -8 4 -8 z" fill="url(#gCar)"/><path d="M314 200 h12 M318 222 h10 M322 246 h8" stroke="#c95d08" stroke-width="2.5" opacity=".8"/><circle cx="322" cy="212" r="2.3" fill="#2b2b2b" stroke="none"/><circle cx="338" cy="212" r="2.3" fill="#2b2b2b" stroke="none"/><path d="M326 221 q4 3 8 0" fill="none" stroke-width="2.2"/></g>
+<g id="malma" filter="url(#sh)" stroke="#2b2b2b" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"><g id="mBody"><path id="mTail" d="M268 222 q22 -10 26 -34 q10 26 -14 48 q-6 -6 -12 -14z" fill="#6f5139"/><path d="M190 258 q-14 36 -2 42 h14 q4 -24 10 -42z" fill="url(#gBody)"/><path d="M248 258 q14 36 2 42 h-14 q-4 -24 -10 -42z" fill="url(#gBody)"/><rect x="176" y="176" width="88" height="96" rx="38" fill="url(#gBody)"/><path d="M176 206 q-22 10 -18 40 q4 10 14 4 q-4 -20 6 -32z" fill="url(#gBody)"/><path d="M264 206 q22 10 18 40 q-4 10 -14 4 q4 -20 -6 -32z" fill="url(#gBody)"/></g>${MALMA_HEAD}</g>
+<g fill="#ff7f9f" stroke="none"><path class="heart" transform="translate(300 120)" d="M0 6 q-10 -14 0 -16 q10 2 0 16z"/><path class="heart" transform="translate(140 130) scale(.8)" d="M0 6 q-10 -14 0 -16 q10 2 0 16z"/><path class="heart" transform="translate(320 150) scale(.6)" d="M0 6 q-10 -14 0 -16 q10 2 0 16z"/></g></svg>`;
+const PONY_SVG=`<svg viewBox="150 30 140 150" aria-hidden="true"><g stroke="#2b2b2b" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round">${MALMA_HEAD.replace(/ id="[^"]*"/g,"")}</g></svg>`;
 
 function render(){
   const t=T[lang]; document.documentElement.lang=lang;
@@ -1673,8 +1730,8 @@ const GUIDE=[
 const GUIDE_TOUR=["horses","class","weight","colors","timeline","big"];
 const PRIMER=GUIDE.map(c=>({k:c.k,t:c.t,b:c.b,s:c.s}));
 const GLKEY={work:"work",class:"class",rating:"class",weight:"weight",apprentice:"weight",trial:"trials",breed:"horses",prize:"prize",distance:"distance",card:"card"};
-Object.assign(T.ko,{brand:"제주경마",nav:{card:"레이스카드",results:"경주 결과",model:"모델 성적","101":"JEJU 101"},homeKicker:"제주경마공원 · 한국 조랑말 경주",homeTitle:"제주경마, 처음이라도 읽히게",homeLede:"서러브레드만 보던 분을 위한 제주 조랑말 경주 안내서입니다. 다가오는 출전표, 지난 결과, 그리고 규칙을 한눈에.",homeCards:{card:["다가오는 경주의 출전표와 경주별 스토리, 모델 순위, 말·기수·조교사 기록을 봅니다.","레이스카드 보기"],results:["지난 한 달 경주 결과와 구간별 전개를 트랙 위에서 다시 봅니다.","결과 보기"],"101":["등급, 중량, 큰 경주, 경주일 진행, 말 복지까지 질문을 고르면 가이드가 답합니다.","가이드에게 묻기"]},nextMeet:d=>`다음 경주일 ${d}`,lastMeet:d=>`최근 결과 ${d}`,cards:n=>`주제 ${n}개`,racesN:n=>`${n}경주`,noResults:"아직 불러온 경주 결과가 없습니다.",heroSub:(d,n)=>`다음 경주일 ${d} · ${n}경주 · 제주경마공원`,heroCta:["레이스카드 보기","제주경마 입문"],explore:"무엇을 보시겠어요?",exploreLede:"다가오는 출전표, 지난 결과, 그리고 처음 보는 분을 위한 안내서.",footTitle:"제주경마 가이드",footOrg:"한국마사회 · 제주경마공원",footData:"데이터: 한국마사회 공공데이터(data.go.kr) · 규칙: 2026년 제주경마 시행계획",footNote:"비공식 안내 페이지입니다. 베팅은 각 지역의 법률에 따르세요.",discFull:"비공식 안내 · 순위는 공공데이터로 계산한 추정치이며 팁이 아닙니다 · 베팅은 각 지역의 법률에 따르세요",discShort:"비공식 안내 · 팁 아님 · 베팅은 현지 법률에 따름",estTag:"데이터 추정 · 비공식",estTip:"순위·승률·예상 전개는 공공데이터로 자동 계산한 추정치입니다. 예측이나 팁, 조언이 아니며 데이터가 늦거나 빠질 수 있습니다.",footDisc:"이 페이지는 비공식 안내입니다. 순위, 승률, 예상 전개는 공공데이터로 자동 계산한 추정치이며 예측, 팁, 조언이 아닙니다. 데이터는 늦거나 빠질 수 있으며, 공식 출마표·경주 결과·배당은 경마장이 발표한 것을 기준으로 합니다.",footLaw:"베팅은 각 지역의 법률에 따르세요.",footBet:"책임감 있게 즐기세요.",storyTab:"스토리",primerBtn:"제주경마 입문",primerTitle:"제주 가이드에게 물어보세요",primerLede:"처음 보시는 분을 위한 질문과 답. 궁금한 걸 고르면 2026년 제주경마 시행계획에서 정리한 답이 나옵니다."});
-Object.assign(T.en,{brand:"Jeju Racing",nav:{card:"Race Card",results:"Results",model:"Model record","101":"Jeju 101"},homeKicker:"Jeju Racecourse · Korean pony racing",homeTitle:"Jeju racing, explained for first-timers",homeLede:"A guide to Korean pony racing for punters who know Thoroughbreds. Upcoming race cards, past results, and how it all works.",homeCards:{card:["Upcoming race cards with a story for each race, model rankings, and horse, jockey and trainer records.","Open the race card"],results:["Results from the past month, with the pace of each race replayed on the track.","See results"],"101":["Classes, weights, big races, race day and welfare: pick a question and the guide answers.","Ask the guide"]},nextMeet:d=>`Next meeting ${d}`,lastMeet:d=>`Latest results ${d}`,cards:n=>`${n} topics`,racesN:n=>`${n} races`,noResults:"No results loaded yet.",heroSub:(d,n)=>`Next meeting ${d} · ${n} races · Jeju Racecourse`,heroCta:["Open race card","Jeju 101"],explore:"Where to start",exploreLede:"Upcoming race cards, past results, and a primer for first-time viewers.",footTitle:"Jeju Racing Guide",footOrg:"Korea Racing Authority · Jeju Racecourse",footData:"Data: KRA open data (data.go.kr) · Rules: 2026 Jeju Racing Plan",footNote:"Unofficial guide. Wagering is subject to the laws of your jurisdiction.",discFull:"Unofficial guide · Rankings are data-based estimates, not tips · Wagering is subject to the laws of your jurisdiction",discShort:"Unofficial guide · Not tips · Wagering subject to local law",estTag:"Data estimate · Unofficial",estTip:"Rankings, win % and race-flow estimates are calculated automatically from public data. They are not predictions, tips or advice, and data may be delayed or incomplete.",footDisc:"This is an unofficial guide. Rankings, win percentages and race-flow estimates are calculated automatically from public data and are not predictions, tips or advice. Data may be delayed or incomplete; official race cards, results and dividends are those published by the racecourse.",footLaw:"Wagering is subject to the laws of your jurisdiction.",footBet:"Please bet responsibly.",storyTab:"Story",primerBtn:"Jeju 101",primerTitle:"Ask the Jeju Guide",primerLede:"Questions and answers for first-time viewers. Pick a question and get an answer drawn from KRA's 2026 Jeju Racing Plan."});
+Object.assign(T.ko,{brand:"제주경마",nav:{card:"레이스카드",results:"경주 결과",model:"모델 성적","101":"JEJU 101"},homeKicker:"제주경마공원 · 한국 조랑말 경주",homeTitle:"제주경마, 처음이라도 읽히게",homeLede:"서러브레드만 보던 분을 위한 제주 조랑말 경주 안내서입니다. 다가오는 출전표, 지난 결과, 그리고 규칙을 한눈에.",homeCards:{card:["다가오는 경주의 출전표와 경주별 스토리, 모델 순위, 말·기수·조교사 기록을 봅니다.","레이스카드 보기"],results:["지난 한 달 경주 결과와 구간별 전개를 트랙 위에서 다시 봅니다.","결과 보기"],"101":["등급, 중량, 큰 경주, 경주일 진행, 말 복지까지 질문을 고르면 말마가 답합니다.","말마에게 묻기"]},nextMeet:d=>`다음 경주일 ${d}`,lastMeet:d=>`최근 결과 ${d}`,cards:n=>`주제 ${n}개`,racesN:n=>`${n}경주`,noResults:"아직 불러온 경주 결과가 없습니다.",heroSub:(d,n)=>`다음 경주일 ${d} · ${n}경주 · 제주경마공원`,heroCta:["레이스카드 보기","제주경마 입문"],explore:"무엇을 보시겠어요?",exploreLede:"다가오는 출전표, 지난 결과, 그리고 처음 보는 분을 위한 안내서.",footTitle:"제주경마 가이드",footOrg:"한국마사회 · 제주경마공원",footData:"데이터: 한국마사회 공공데이터(data.go.kr) · 규칙: 2026년 제주경마 시행계획",footNote:"비공식 안내 페이지입니다. 베팅은 각 지역의 법률에 따르세요.",discFull:"비공식 안내 · 순위는 공공데이터로 계산한 추정치이며 팁이 아닙니다 · 베팅은 각 지역의 법률에 따르세요",discShort:"비공식 안내 · 팁 아님 · 베팅은 현지 법률에 따름",estTag:"데이터 추정 · 비공식",estTip:"순위·승률·예상 전개는 공공데이터로 자동 계산한 추정치입니다. 예측이나 팁, 조언이 아니며 데이터가 늦거나 빠질 수 있습니다.",footDisc:"이 페이지는 비공식 안내입니다. 순위, 승률, 예상 전개는 공공데이터로 자동 계산한 추정치이며 예측, 팁, 조언이 아닙니다. 데이터는 늦거나 빠질 수 있으며, 공식 출마표·경주 결과·배당은 경마장이 발표한 것을 기준으로 합니다.",footLaw:"베팅은 각 지역의 법률에 따르세요.",footBet:"책임감 있게 즐기세요.",storyTab:"스토리",primerBtn:"제주경마 입문",primerTitle:"말마에게 물어보세요",primerLede:"우리 대표 캐릭터 말마가 답하는 제주경마 입문. 궁금한 걸 고르면 2026년 제주경마 시행계획에서 정리한 답이 나옵니다."});
+Object.assign(T.en,{brand:"Jeju Racing",nav:{card:"Race Card",results:"Results",model:"Model record","101":"Jeju 101"},homeKicker:"Jeju Racecourse · Korean pony racing",homeTitle:"Jeju racing, explained for first-timers",homeLede:"A guide to Korean pony racing for punters who know Thoroughbreds. Upcoming race cards, past results, and how it all works.",homeCards:{card:["Upcoming race cards with a story for each race, model rankings, and horse, jockey and trainer records.","Open the race card"],results:["Results from the past month, with the pace of each race replayed on the track.","See results"],"101":["Classes, weights, big races, race day and welfare: pick a question and Malma answers.","Ask Malma"]},nextMeet:d=>`Next meeting ${d}`,lastMeet:d=>`Latest results ${d}`,cards:n=>`${n} topics`,racesN:n=>`${n} races`,noResults:"No results loaded yet.",heroSub:(d,n)=>`Next meeting ${d} · ${n} races · Jeju Racecourse`,heroCta:["Open race card","Jeju 101"],explore:"Where to start",exploreLede:"Upcoming race cards, past results, and a primer for first-time viewers.",footTitle:"Jeju Racing Guide",footOrg:"Korea Racing Authority · Jeju Racecourse",footData:"Data: KRA open data (data.go.kr) · Rules: 2026 Jeju Racing Plan",footNote:"Unofficial guide. Wagering is subject to the laws of your jurisdiction.",discFull:"Unofficial guide · Rankings are data-based estimates, not tips · Wagering is subject to the laws of your jurisdiction",discShort:"Unofficial guide · Not tips · Wagering subject to local law",estTag:"Data estimate · Unofficial",estTip:"Rankings, win % and race-flow estimates are calculated automatically from public data. They are not predictions, tips or advice, and data may be delayed or incomplete.",footDisc:"This is an unofficial guide. Rankings, win percentages and race-flow estimates are calculated automatically from public data and are not predictions, tips or advice. Data may be delayed or incomplete; official race cards, results and dividends are those published by the racecourse.",footLaw:"Wagering is subject to the laws of your jurisdiction.",footBet:"Please bet responsibly.",storyTab:"Story",primerBtn:"Jeju 101",primerTitle:"Ask Malma",primerLede:"Our mascot Malma answers first-timer questions. Pick one and get an answer drawn from KRA's 2026 Jeju Racing Plan."});
 function primerHtml(open){
   const t=T[lang], i=lang==="ko"?0:1;
   return `<section><h3>${t.primerTitle}</h3><p class="chnote">${t.primerLede}</p></section>`+PRIMER.map(c=>
