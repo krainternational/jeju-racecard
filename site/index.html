@@ -582,7 +582,7 @@ const T = {
   chRankJ:"제주 기수 통산 승률 순위 (100전 이상)",chRankT:"제주 조교사 통산 승률 순위 (100두 이상)",chOutcome:"통산 결과 구성",o1:"1착",o2:"2착",o3:"3착",oOther:"4착 이하",todayRides:"이 경주일 출전",openCharts:"이름을 누르면 그래프",
   resTitle:"경주 결과",resLede:"최근 한 달간 제주 경주 결과입니다. 다가오는 레이스카드에 나오는 말에는 '레이스카드 출전' 표시가 붙고, 이 결과로 레이스카드의 '최근 5전'을 계산합니다.",
   trial:"주행심사",raceDay:"경주",goingWord:"주로",winTime:"1위 기록",inCard:"레이스카드 출전",
-  rcols:["착순","마명","기수","부담","마체중","레이팅","기록","1위와 차","착차","단승"],
+  rcols:["착순","마번","마명","기수","부담","마체중","레이팅","기록","1위와 차","착차","단승"],
   trialNote:"주행심사는 데뷔 전이나 오랜 휴양 뒤에 말이 경주를 뛸 수 있는지 확인하는 주행입니다. 상금과 착차가 없고 기록만 남습니다.",
   resNote:(r,w)=>`${r.budam} 조건의 ${r.dist}m 경주였습니다. ${w?`${w.jck} 기수의 ${w.hrnm}이(가) ${w.time}로 1위를 했습니다.`:""} 착차는 바로 앞 순위 말과의 거리이고, 마신은 말 한 마리 몸길이(약 2.4m)입니다.`,
   recentTitle:"최근 경주 결과",
@@ -657,7 +657,7 @@ const T = {
   chRankJ:"Jeju jockeys by career win rate (100+ rides)",chRankT:"Jeju trainers by career win rate (100+ runners)",chOutcome:"Career outcomes",o1:"1st",o2:"2nd",o3:"3rd",oOther:"4th or worse",todayRides:"Runners this race day",openCharts:"tap a name for charts",
   resTitle:"Results",resLede:"Jeju results from the past month. Horses on the upcoming race card are tagged, and these results feed the card's Last 5 column.",
   trial:"Trial",raceDay:"Races",goingWord:"Going",winTime:"Winning time",inCard:"On race card",
-  rcols:["Pos","Horse","Jockey","Wt","Body wt","Rating","Time","Behind","Margin","SP"],
+  rcols:["Pos","No","Horse","Jockey","Wt","Body wt","Rating","Time","Behind","Margin","SP"],
   trialNote:"A trial checks that a horse is fit to race, before its debut or after a long break. There is no prize money and no official margins, only times.",
   resNote:(r,w)=>`A ${r.dist}m ${tr(r.budam).toLowerCase()} race. ${w?`${dname(w.hrnm,w.hrNo)} won in ${w.time} under ${pname(w.jck)}.`:""} Margins are to the horse directly ahead; one length is about one horse's body length (2.4m).`,
   recentTitle:"Recent results",
@@ -1075,7 +1075,7 @@ function renderResults(){
     const bw=h.bw?`${h.bw}<span class="bwd ${h.bwd>0?"up":h.bwd<0?"dn":""}">${h.bwd>0?"+":""}${h.bwd||"±0"}</span>`:"–";
     const inCard=runs.some(x=>x.hrnm===h.hrnm);
     const has=!!infoFor(h.hrNo,h.hrnm);
-    return `<tr class="${p===99?"out":""} ${has?"has":""}" ${has?`tabindex="0" data-h="${h.hrNo}" aria-selected="${resSel==h.hrNo}"`:""}><td class="n"><span class="place p${p<=3?p:0}">${p===99?"–":p}</span></td>
+    return `<tr class="${p===99?"out":""} ${has?"has":""}" ${has?`tabindex="0" data-h="${h.hrNo}" aria-selected="${resSel==h.hrNo}"`:""}><td class="n"><span class="place p${p<=3?p:0}">${p===99?"–":p}</span></td><td class="n">${(()=>{const q=paceOf(h.date,h.no,h.hrnm);return q&&q.gate?saddle(q.gate):"–";})()}</td>
       <td class="hn">${chipBtn("horse",h.hrnm)}${has?` <span class="flag info">${t.hasInfo}</span>`:""}${inCard?` <span class="flag in">${t.inCard}</span>`:""}</td><td>${chipBtn("jockey",h.jck)}${jkTag(h.jck)}</td>
       <td class="n">${h.wgt}</td><td class="n">${bw}</td><td class="n">${h.ratg||"–"}</td>
       <td class="n">${esc(h.time)}</td><td class="n">${gap}</td><td>${h.gbn==="T"?"–":esc(marginLabel(h.diff))}</td><td class="n">${(()=>{const p=paceOf(h.date,h.no,h.hrnm);return p&&p.win?p.win.toFixed(1):"–";})()}</td></tr>`;}).join("");
@@ -1084,7 +1084,7 @@ function renderResults(){
     <div class="race rcard"><div class="rhead"><div><div class="sub">${esc(r0.date.replace(/\//g,"."))} · ${rL(r0.no)} · ${r0.gbn==="T"?t.trial:esc(classLabel(r0.cls))} · ${r0.dist}m · ${esc(t.goingWord)} ${esc(tr(goingInfo(r0.track).name))} ${goingInfo(r0.track).pct}%</div>
       <h2>${win?esc(dname(win.hrnm,win.hrNo)):""}</h2></div><div class="post">${esc(win?.time||"")}<small>${t.winTime}</small></div></div>
       <p class="lede">${desc}</p>
-      <div class="tbl"><table><thead><tr>${t.rcols.map((c,i)=>`<th class="${[0,3,4,5,6,7,9].includes(i)?"n":""}">${c}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div>
+      <div class="tbl"><table><thead><tr>${t.rcols.map((c,i)=>`<th class="${[0,1,4,5,6,7,8,10].includes(i)?"n":""}">${c}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div>
       ${(()=>{const pr=paceFor(r0.date,r0.no); const fo=resSel?list.find(x=>x.hrNo==resSel)?.hrnm:null; return pr.length>1?`<div class="pacewrap"><h3>${t.paceTitle}</h3><div class="pacetrack">${chartTrack(pr,r0.dist,fo)}</div><details class="why"><summary>${t.paceLines}</summary>${chartPace(pr,fo)}</details></div>`:"";})()}
       <div id="rinfo">${(()=>{const i=resSel&&list.some(x=>x.hrNo==resSel)?infoFor(resSel):null;return i?infoCard(i):`<p class="noent">${t.infoHint}</p>`;})()}</div></div>`;
   box.querySelectorAll("tr.has").forEach(tr=>{const go=()=>{resSel=tr.dataset.h;renderResults();};tr.onclick=go;tr.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go();}};});
