@@ -1103,7 +1103,7 @@ function renderField(field){
   const rowOf=h=>{const rt=ratingOf(h); const w=(h.wgt-minW)/((maxW-minW)||1); const st=stOf(h);
    return `<tr tabindex="0" data-n="${h.no}" aria-selected="${rsel===h.no}">
     <td class="n">${saddle(h.no)}</td>
-    <td><span class="stchip s-${st.k}" ${st.n?tipAttr(st.tip):""}>${t.styles[st.k]}</span>${st.n?`<div class="sub2 stsub">${esc(st.tip.replace(/^[^·]*· /,""))}</div>`:""}</td>
+    <td><span class="stchip s-${st.k}" ${st.n?tipAttr(st.tip):""}>${t.styles[st.k]}</span></td>
     <td class="hn">${chipBtn("horse",h.hrnm)}${(()=>{const x=finishOf(h);return x?` <span class="place p${x<=3?x:0}" title="${t.finished}">${x===99?"–":x}</span>`:"";})()}</td>
     <td><span class="sx">${esc(t.sexes[h.gndr]||h.gndr)}</span> ${esc(t.ageU(h.ag))}</td>
     <td class="n"><span class="rt"><i style="width:${8+w*32}px"></i>${h.wgt}</span></td>
