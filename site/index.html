@@ -627,8 +627,8 @@ const T = {
   vetNA:"출전표 API에는 진료·장구 기록이 없습니다. 경주 당일 출전마 API(API315)를 불러오면 표시됩니다.",
   loadedSheet:(n,d)=>`출전표 ${n}두를 불러왔습니다 (${d}).`,loadedSheetN:n=>`출전표 ${n}두를 불러왔습니다.`,
   rankTab:"나만의 순위",modelP:"모델 승률",fnames:{dist:"거리 적성",form:"최근 폼",hwin:"말 승률",jock:"기수 승률",trn:"조교사 승률",ratg:"레이팅"},
-  rankNote:"내 관점으로 말의 순위를 매겨 보는 페이지입니다. 거리 적성, 최근 폼, 말 승률, 기수 승률, 조교사 승률, 레이팅 중 중요하게 보는 항목의 열 제목을 누르면 그 기준으로 순위가 다시 매겨집니다. 마번은 출전표 그대로입니다.",sortHint:"열 제목을 누르면 그 항목으로 정렬됩니다. ▼ 표시가 현재 정렬 기준입니다.",sortModel:"정렬: 모델 종합 (거리 15% · 폼 27% · 말 승률 16% · 기수 16% · 조교사 10% · 레이팅 15%)",sortBy:n=>`정렬: ${n} (실제 값 기준)`,
-  rankLegend:"표의 값은 실제 값입니다. 거리 적성: 오늘 거리 ±100m 경주의 평균 착순(낮을수록 좋음, 기록 없으면 '추정'). 최근 폼: 최근 5전 평균 착순과 착순 나열(최신 순). 말 승률: 통산 1착 비율. 기수·조교사: 제주 통산 승률. 레이팅: KRA 레이팅. 종합 모델 승률은 이 값들을 경주 안에서 상대 비교해 가중 합산합니다(표본이 적으면 평균 쪽으로 보정).",
+  rankNote:"내 관점으로 말의 순위를 매겨 보는 페이지입니다. 거리 적성, 최근 폼, 말 승률, 기수 승률, 조교사 승률, 레이팅 중 중요하게 보는 항목의 열 제목을 누르면 그 기준으로 순위가 다시 매겨집니다. 마번은 출전표 그대로입니다.",sortHint:"열 제목을 누르면 그 항목으로 정렬됩니다. ▼ 표시가 현재 정렬 기준입니다.",sortModel:"",sortGate:"정렬: 마번 순",sortBy:n=>`정렬: ${n} (실제 값 기준)`,
+  rankLegend:"표의 값은 실제 값입니다. 거리 적성: 오늘 거리 ±100m 경주의 평균 착순(낮을수록 좋음, 기록 없으면 '추정'). 최근 폼: 최근 5전 평균 착순과 착순 나열(최신 순). 말 승률: 통산 1착 비율. 기수·조교사: 제주 통산 승률. 레이팅: KRA 레이팅.",
   whyTitle:"어떻게 유력마를 고르나요?",
   whyBody:`<p><b>한 줄 요약.</b> 이것은 전문가의 예상이 아니라 통계입니다. 여기 나오는 모든 수치는 출전마의 경주 전 데이터를 2019년 이후 모든 제주 경주 결과와 대조해 계산한 것입니다. 사람이 말을 고르지 않으며, 배당도 보지 않습니다.</p>
 <p><b>무엇을 보나요?</b> 경주 전에 알 수 있는 26가지 정보를 봅니다. 크게 나누면 다섯 가지예요.<br>· <b>최근 실력</b>: 최근 경주에서 얼마나 빨리 뛰었나 (거리·주로 상태 보정)<br>· <b>막판 힘</b>: 마지막 600m를 얼마나 빨리 달렸나<br>· <b>사람</b>: 기수와 조교사가 요즘 얼마나 이기고 있나<br>· <b>컨디션</b>: 얼마 만에 나오는지, 최근 2주·한 달 훈련량<br>· <b>조건</b>: 게이트, 이 거리에서의 성적, 부담중량, 등급 이동, 레이팅, 나이</p>
@@ -705,8 +705,8 @@ const T = {
   vetNA:"The entry sheet API has no vet or gear records. Load the runner API (API315) on race day to see them.",
   loadedSheet:(n,d)=>`Loaded ${n} runners from the entry sheet (${d}).`,loadedSheetN:n=>`Loaded ${n} runners from the entry sheet.`,
   rankTab:"Rank your own",modelP:"Model win %",fnames:{dist:"Distance",form:"Form",hwin:"Horse win",jock:"Jockey win",trn:"Trainer win",ratg:"Rating"},
-  rankNote:"This is a page to rank the horses from your own point of view. Choose the factor that matters most to you (distance, recent form, horse win, jockey win, trainer win or rating) and tap its column header to rank the field accordingly. Gate numbers stay as on the entry sheet.",sortHint:"Tap any column header to sort by it. ▼ marks the current sort.",sortModel:"Sorted by: combined model (distance 15% · form 27% · horse win 16% · jockey 16% · trainer 10% · rating 15%)",sortBy:n=>`Sorted by: ${n} (actual values)`,
-  rankLegend:"Table shows actual values. Distance fit: average finish in races within ±100m of today's trip (lower is better; 'est.' when none on file). Recent form: average finish over the last 5 and the finishes themselves (latest first). Horse win %: career wins ÷ starts. Jockey/trainer: Jeju career win rate. Rating: KRA rating. The combined model win % compares these within the race and weights them (shrunk toward the average for small samples).",
+  rankNote:"This is a page to rank the horses from your own point of view. Choose the factor that matters most to you (distance, recent form, horse win, jockey win, trainer win or rating) and tap its column header to rank the field accordingly. Gate numbers stay as on the entry sheet.",sortHint:"Tap any column header to sort by it. ▼ marks the current sort.",sortModel:"",sortGate:"Sorted by: gate number",sortBy:n=>`Sorted by: ${n} (actual values)`,
+  rankLegend:"Table shows actual values. Distance fit: average finish in races within ±100m of today's trip (lower is better; 'est.' when none on file). Recent form: average finish over the last 5 and the finishes themselves (latest first). Horse win %: career wins ÷ starts. Jockey/trainer: Jeju career win rate. Rating: KRA rating.",
   whyTitle:"How do we choose the best horses?",
   whyBody:`<p><b>In one line.</b> This is statistics, not a tipster's opinion. Every number here is calculated by matching each runner's pre-race data against the results of every Jeju race since 2019. No expert picks the horses, and we never look at the odds.</p>
 <p><b>What it looks at.</b> 26 things known before the race, in five groups:<br>· <b>Recent ability</b>: how fast the horse ran lately (adjusted for distance and going)<br>· <b>Finishing speed</b>: how quick it was over the last 600 m<br>· <b>People</b>: how often the jockey and trainer are winning right now<br>· <b>Freshness</b>: days since its last run, and training load over the past two weeks and month<br>· <b>Conditions</b>: draw, record at this distance, weight carried, class change, rating, age</p>
@@ -1069,7 +1069,7 @@ const days=new Map(); let curDay=null;
 function mergeVet(apiRuns){ let n=0; apiRuns.forEach(h=>{const dy=days.get(String(h.raceDt)); if(!dy) return; const r=dy.runs.find(x=>x.raceNo==h.raceNo&&x.hrnm===h.hrnm); if(!r) return;
   r.equip=[1,2,3,4,5].map(i=>h["asisEquip"+i]).filter(x=>x&&x!=="-"); r.bleed=[1,2].map(i=>h["latstBledg"+i]).filter(x=>x&&x!=="-"); r.treat=[1,2].map(i=>h["latstTrea"+i+"Txt"]).filter(x=>x&&x!=="-"); r.vet=true; n++;}); return n; }
 function putDay(dy){ days.set(dy.date,dy); }
-function useDay(d){ const dy=days.get(d); if(!dy) return; curDay=d; rankSort="model"; races=dy.races; runs=dy.runs; reg=dy.reg; sel=0; rsel=null; hsel=null; view="story"; isSample=!!dy.sample; }
+function useDay(d){ const dy=days.get(d); if(!dy) return; curDay=d; rankSort="gate"; races=dy.races; runs=dy.runs; reg=dy.reg; sel=0; rsel=null; hsel=null; view="story"; isSample=!!dy.sample; }
 function pickDefaultDay(){ const today=new Date(); const td=`${today.getFullYear()}${String(today.getMonth()+1).padStart(2,"0")}${String(today.getDate()).padStart(2,"0")}`;
   const ks=[...days.keys()].sort(); return ks.find(k=>k>=td&&days.get(k).sheet)||ks.filter(k=>days.get(k).sheet).pop()||ks.pop(); }
 
@@ -1379,7 +1379,7 @@ document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest
 
 /* ---- 예측 순위 ---- */
 const FACTORS=[["dist",0.15],["form",0.27],["hwin",0.16],["jock",0.16],["trn",0.10],["ratg",0.15]];
-let rankSort="model";
+let rankSort="gate";
 const pctl=r=>{const p=pos(r.chak), f=parseInt(String(r.chak).split("/")[1])||10; return p===99?0:1-(p-1)/Math.max(f-1,1);};
 function rawFactors(h,race){
   const rs=recentFor(h.hrnm).filter(x=>x.gbn==="R"), info=infoFor(h.hrNo,h.hrnm);
@@ -1557,9 +1557,8 @@ function modelStory(m,ko){
 function renderRank(field){
   const t=T[lang], r=races[sel], body=$("tabbody"), rows=rankField(field,r), ko=lang==="ko";
   const key=rankSort;
-  if(key==="model") rows.sort((a,b)=>b.prob-a.prob);
-  else rows.sort((a,b)=>{const A=a.a[key],B=b.a[key]; if(A.v==null&&B.v==null) return b.prob-a.prob; if(A.v==null) return 1; if(B.v==null) return -1; return (A.lo?A.v-B.v:B.v-A.v)||(b.prob-a.prob);});
-  const maxP=Math.max(...rows.map(x=>x.prob));
+  if(key==="gate"||!FACTORS.some(([k])=>k===key)) rows.sort((a,b)=>a.h.no-b.h.no);
+  else rows.sort((a,b)=>{const A=a.a[key],B=b.a[key]; if(A.v==null&&B.v==null) return a.h.no-b.h.no; if(A.v==null) return 1; if(B.v==null) return -1; return (A.lo?A.v-B.v:B.v-A.v)||(a.h.no-b.h.no);});
   const runs=n=>ko?`${n}전`:`${n}r`;
   const fmt={
     dist:x=>{const a=x.a.dist; return a.v!=null?`${a.v.toFixed(1)}${ko?"착":""} <small>· ${runs(a.n)}</small>`:a.est?`<small>${ko?"추정":"est."}</small>`:"–";},
@@ -1570,16 +1569,16 @@ function renderRank(field){
     ratg:x=>x.a.ratg.v==null?"–":`R${x.a.ratg.v}`};
   // 막대: 항목별 최고를 100%로. 낮을수록 좋은 항목(평균 착순)은 뒤집어서
   const bar=(k,x)=>{const a=x.a[k]; if(a.v==null) return 0; const vals=rows.map(y=>y.a[k].v).filter(v=>v!=null); const mn=Math.min(...vals),mx=Math.max(...vals); if(mx===mn) return 100; return a.lo?(mx-a.v)/(mx-mn)*100:(a.v-mn)/(mx-mn)*100;};
-  const head=`<th class="n">#</th><th class="n">${t.fcols[0]}</th><th>${t.fcols[1]}</th><th class="n"><button type="button" data-s="model" class="${key==="model"?"on":""}">${t.modelP} <span class="si">${key==="model"?"▼":"⇅"}</span></button></th>`+
-    FACTORS.map(([k,w])=>`<th class="n fc"><button type="button" data-s="${k}" class="${key===k?"on":""}">${t.fnames[k]} <span class="si">${key===k?"▼":"⇅"}</span><small>${Math.round(w*100)}%</small></button></th>`).join("");
+  const gk=key==="gate"||!FACTORS.some(([k])=>k===key);
+  const head=`<th class="n">#</th><th class="n"><button type="button" data-s="gate" class="${gk?"on":""}">${t.fcols[0]} <span class="si">${gk?"▼":"⇅"}</span></button></th><th>${t.fcols[1]}</th>`+
+    FACTORS.map(([k])=>`<th class="n fc"><button type="button" data-s="${k}" class="${key===k?"on":""}">${t.fnames[k]} <span class="si">${key===k?"▼":"⇅"}</span></button></th>`).join("");
   const trows=rows.map((x,i)=>`<tr tabindex="0" data-n="${x.h.no}"><td class="n"><b>${i+1}</b></td><td class="n">${saddle(x.h.no)}</td>
      <td class="hn">${chipBtn("horse",x.h.hrnm)}${(()=>{const f=finishOf(x.h);return f?` <span class="place p${f<=3?f:0}" title="${t.finished}">${f===99?"–":f}</span>`:"";})()}<div class="sub2">${esc(pname(x.h.jck))} · ${esc(pname(x.h.trar))}</div></td>
-     <td class="n ${key==="model"?"sortcol":""}"><div class="pbar"><i style="width:${x.prob/maxP*100}%"></i></div><span class="pv">${x.prob.toFixed(1)}%</span></td>`+
+`+
      FACTORS.map(([k])=>`<td class="n fc ${key===k?"sortcol":""}"><div class="fbar"><i style="width:${bar(k,x)}%"></i></div><span class="fv">${fmt[k](x)}</span></td>`).join("")+`</tr>`).join("");
-  const sortNote=key==="model"?t.sortModel:t.sortBy(t.fnames[key]);
+  const sortNote=gk?t.sortGate:t.sortBy(t.fnames[key]);
   body.innerHTML=`<div class="ehead"><p>${estTag()} ${t.rankNote}</p></div><p class="sorthint"><span class="kbd">${t.fnames.form} ⇅</span>${t.sortHint}</p><p class="sortnote">${sortNote}</p>
-    <div class="tbl"><table class="ranktbl"><thead><tr>${head}</tr></thead><tbody>${trows}</tbody></table></div><p class="chnote">${t.rankLegend}</p>
-    <details class="why"><summary>${t.whyTitle}</summary><div class="whybody">${t.whyBody}</div></details>`;
+    <div class="tbl"><table class="ranktbl"><thead><tr>${head}</tr></thead><tbody>${trows}</tbody></table></div><p class="chnote">${t.rankLegend}</p>`;
   body.querySelectorAll("th button").forEach(b=>b.onclick=()=>{rankSort=b.dataset.s; renderRank(field);});
 }
 
