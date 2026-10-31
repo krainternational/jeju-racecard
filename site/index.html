@@ -626,7 +626,7 @@ const T = {
   wEqual:"모든 말이 같은 중량",finished:"실제 착순",fromSheet:"출전표 기준",
   vetNA:"출전표 API에는 진료·장구 기록이 없습니다. 경주 당일 출전마 API(API315)를 불러오면 표시됩니다.",
   loadedSheet:(n,d)=>`출전표 ${n}두를 불러왔습니다 (${d}).`,loadedSheetN:n=>`출전표 ${n}두를 불러왔습니다.`,
-  rankTab:"예측 순위",modelP:"모델 승률",fnames:{dist:"거리 적성",form:"최근 폼",hwin:"말 승률",jock:"기수 승률",trn:"조교사 승률",ratg:"레이팅"},
+  rankTab:"나만의 순위",modelP:"모델 승률",fnames:{dist:"거리 적성",form:"최근 폼",hwin:"말 승률",jock:"기수 승률",trn:"조교사 승률",ratg:"레이팅"},
   rankNote:"열 제목을 누르면 그 항목의 실제 값으로 순위를 다시 매깁니다. '모델 승률'은 여섯 항목을 가중 합산한 종합 순위(스토리의 선정과 같음)입니다. 마번은 출전표 그대로입니다. 참고용 모델이며 실제 배당이나 경주 전개는 반영하지 않습니다.",sortHint:"열 제목을 누르면 그 항목으로 정렬됩니다. ▼ 표시가 현재 정렬 기준입니다.",sortModel:"정렬: 모델 종합 (거리 15% · 폼 27% · 말 승률 16% · 기수 16% · 조교사 10% · 레이팅 15%)",sortBy:n=>`정렬: ${n} (실제 값 기준)`,
   rankLegend:"표의 값은 실제 값입니다. 거리 적성: 오늘 거리 ±100m 경주의 평균 착순(낮을수록 좋음, 기록 없으면 '추정'). 최근 폼: 최근 5전 평균 착순과 착순 나열(최신 순). 말 승률: 통산 1착 비율. 기수·조교사: 제주 통산 승률. 레이팅: KRA 레이팅. 종합 모델 승률은 이 값들을 경주 안에서 상대 비교해 가중 합산합니다(표본이 적으면 평균 쪽으로 보정).",
   whyTitle:"어떻게 유력마를 고르나요?",
@@ -705,7 +705,7 @@ const T = {
   wEqual:"All runners carry the same weight",finished:"Actual finish",fromSheet:"From the entry sheet",
   vetNA:"The entry sheet API has no vet or gear records. Load the runner API (API315) on race day to see them.",
   loadedSheet:(n,d)=>`Loaded ${n} runners from the entry sheet (${d}).`,loadedSheetN:n=>`Loaded ${n} runners from the entry sheet.`,
-  rankTab:"Model rank",modelP:"Model win %",fnames:{dist:"Distance",form:"Form",hwin:"Horse win",jock:"Jockey win",trn:"Trainer win",ratg:"Rating"},
+  rankTab:"Rank your own",modelP:"Model win %",fnames:{dist:"Distance",form:"Form",hwin:"Horse win",jock:"Jockey win",trn:"Trainer win",ratg:"Rating"},
   rankNote:"Tap a column header to re-rank the field by that factor's actual value. 'Model win %' is the combined weighted ranking (the same selection shown in the Story). Gate numbers stay as on the entry sheet. A reference model only: it ignores the market and how the race will be run.",sortHint:"Tap any column header to sort by it. ▼ marks the current sort.",sortModel:"Sorted by: combined model (distance 15% · form 27% · horse win 16% · jockey 16% · trainer 10% · rating 15%)",sortBy:n=>`Sorted by: ${n} (actual values)`,
   rankLegend:"Table shows actual values. Distance fit: average finish in races within ±100m of today's trip (lower is better; 'est.' when none on file). Recent form: average finish over the last 5 and the finishes themselves (latest first). Horse win %: career wins ÷ starts. Jockey/trainer: Jeju career win rate. Rating: KRA rating. The combined model win % compares these within the race and weights them (shrunk toward the average for small samples).",
   whyTitle:"How do we choose the best horses?",
@@ -1087,8 +1087,7 @@ function renderEntries(){
   const tabs=`<div class="tabs" role="tablist">
     <button type="button" role="tab" aria-selected="${view==="story"}" data-v="story" ${field.length?"":"disabled"}>${t.storyTab}</button>
     <button type="button" role="tab" aria-selected="${view==="field"}" data-v="field" ${field.length?"":"disabled"}>${t.field} <span>${field.length}</span></button>
-    <button type="button" role="tab" aria-selected="${view==="rank"}" data-v="rank" ${field.length?"":"disabled"}>${t.rankTab}</button>
-    <button type="button" role="tab" aria-selected="${view==="entries"}" data-v="entries" ${ents.length?"":"disabled"}>${t.entries} <span>${ents.length}</span></button></div>`;
+    <button type="button" role="tab" aria-selected="${view==="rank"}" data-v="rank" ${field.length?"":"disabled"}>${t.rankTab}</button></div>`;
   if(!field.length&&!ents.length){ box.innerHTML=`<h3>${t.field}</h3><p class="noent">${t.noEntries}</p>`; return; }
   box.innerHTML=tabs+`<div id="tabbody"></div>`;
   box.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{view=b.dataset.v;renderEntries();});
@@ -1867,7 +1866,7 @@ function buildStory(field,race){
   const none=field.filter(h=>h.recAll[0]>0&&!runHist(h.hrnm).length); if(none.length&&none.length<n) w.push(ko?`최근 기록 데이터에 경주가 없는 말: ${nm(none.map(h=>({h})))}. 쉬었다 나왔을 수 있습니다.`:`No run in the recent data for: ${nm(none.map(h=>({h})))}. They may be returning from a break.`);
   const bl=field.filter(h=>h.bleed&&h.bleed.length); if(bl.length) w.push(ko?`폐출혈 기록이 확인된 말: ${nm(bl.map(h=>({h})))}.`:`Bleeding record on file: ${nm(bl.map(h=>({h})))}.`);
   const wline=byModel?(ko?`출마표 모형: 배당 없이 경주 전 기록 26개 항목(스피드 지수, 마지막 600m, 기수·조교사, 출전 간격, 게이트, 거리 적성, 훈련량 등)으로 계산합니다. 2025~2026년 ${MODEL.validation.races}경주 검증에서 1순위 우승 ${Math.round(MODEL.validation.top1*100)}%, 상위 4두 안에 우승마 ${Math.round(MODEL.validation.top4*100)}% (인기 1위 우승 ${Math.round(MODEL.validation.market_top1*100)}%).`
-      :`Race-card model: no odds, 26 pre-race factors (speed figures, last 600 m, jockey and trainer, days since last run, draw, distance fit, training load and more). Tested on ${MODEL.validation.races} races in 2025–26: top pick won ${Math.round(MODEL.validation.top1*100)}%, winner inside the top four ${Math.round(MODEL.validation.top4*100)}% (favourite won ${Math.round(MODEL.validation.market_top1*100)}%).`):ko?"여섯 항목 가중 합산: 거리 적성 15% · 최근 폼 27% · 말 승률 16% · 기수 승률 16% · 조교사 승률 10% · 레이팅 15%. 항목별 순위는 '예측 순위' 탭에서 볼 수 있습니다.":"Weighted across six factors: distance fit 15% · recent form 27% · horse win % 16% · jockey win % 16% · trainer win % 10% · rating 15%. Per-factor rankings are on the Model rank tab.";
+      :`Race-card model: no odds, 26 pre-race factors (speed figures, last 600 m, jockey and trainer, days since last run, draw, distance fit, training load and more). Tested on ${MODEL.validation.races} races in 2025–26: top pick won ${Math.round(MODEL.validation.top1*100)}%, winner inside the top four ${Math.round(MODEL.validation.top4*100)}% (favourite won ${Math.round(MODEL.validation.market_top1*100)}%).`):ko?"여섯 항목 가중 합산: 거리 적성 15% · 최근 폼 27% · 말 승률 16% · 기수 승률 16% · 조교사 승률 10% · 레이팅 15%. 항목별 순위는 '나만의 순위' 탭에서 볼 수 있습니다.":"Weighted across six factors: distance fit 15% · recent form 27% · horse win % 16% · jockey win % 16% · trainer win % 10% · rating 15%. Per-factor rankings are on the Rank your own tab.";
   const ETAG=estTag(); const H=ko?["이 경주는 어떤 경주인가","누가 앞서 보이나","어떻게 흘러갈까","주의할 점","한 줄 정리"]:["What kind of race is this?","Who looks best","How it may unfold","Watch-outs","Bottom line"];
   const bottom=byModel?(ko?`모델 상위 4두는 ${top.map(x=>`#${x.h.no}`).join(" · ")}입니다. 배당을 보지 않고 출마표와 과거 기록만으로 낸 판단이라, 인기 순위와 다를 수 있습니다.`
       :`The model's top four are ${top.map(x=>`#${x.h.no}`).join(", ")}. It reads only the race card and past form, never the odds, so it can differ from the betting market.`):ko?`모델 상위는 ${top.map(x=>`#${x.h.no}`).join(" · ")}입니다. 반영된 최근 경주가 많지 않으니 ${glBtn("card","출전표")}와 함께 참고용으로 보세요.`
