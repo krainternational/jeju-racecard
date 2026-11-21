@@ -1,0 +1,86 @@
+name: 경주일 실시간 결과 갱신
+
+# 한 번 시작되면 경주가 끝날 때까지 4분마다 결과·구간 기록을 받아 latest.json에 합친다.
+# 시작: 예약(하나만 걸려도 됨) · 아침 데이터 갱신 푸시 · 수동 실행. 경주가 없는 날은 바로 끝난다.
+on:
+  schedule:
+    - cron: "*/20 0-9 * * 1,5,6,0"
+  push:
+    branches: [main]
+    paths: ["latest.json"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: live
+  cancel-in-progress: false
+
+env:
+  TZ: Asia/Seoul
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 경주가 끝날 때까지 4분마다 수집
+        env:
+          JEJU_API_KEY: ${{ secrets.JEJU_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          START=$(date +%s); DT=$(date +%Y%m%d); DONE_STREAK=0
+          sync() { git fetch -q origin main && git reset -q --hard origin/main; }
+          sig() { python - <<'PY'
+          import json,hashlib
+          j=json.load(open("latest.json",encoding="utf-8"))
+          rows=sorted(json.dumps(x,ensure_ascii=False,sort_keys=True) for x in (j.get("results") or [])+(j.get("pace") or []))
+          print(hashlib.md5("\n".join(rows).encode()).hexdigest())
+          PY
+          }
+          finished() { python - "$DT" <<'PY'
+          import json,sys
+          d=sys.argv[1]; j=json.load(open("latest.json",encoding="utf-8"))
+          races={str(r.get("rcNo")) for r in j.get("sheet") or [] if str(r.get("rcDate","")).replace("/","")==d}
+          done={str(p.get("rcNo")) for p in j.get("pace") or [] if str(p.get("rcDate",""))==d}
+          print("yes" if races and races<=done else "no")
+          PY
+          }
+          raceday() { python - "$DT" <<'PY'
+          import json,sys
+          j=json.load(open("latest.json",encoding="utf-8"))
+          sys.exit(0 if any(str(r.get("rcDate","")).replace("/","")==sys.argv[1] for r in j.get("sheet") or []) else 1)
+          PY
+          }
+          while :; do
+            NOW=$(date +%H%M)
+            if [ "$NOW" -ge 2010 ]; then echo "20:10 이후, 종료"; break; fi
+            sync || true
+            raceday || { echo "오늘은 경주가 없습니다."; exit 0; }
+            if [ "$NOW" -lt 1050 ]; then sleep 300; continue; fi
+            BEFORE=$(sig)
+            set +e
+            python live/collect.py "$DT" --merge-into latest.json --out latest.json --only-race-days
+            code=$?
+            set -e
+            if [ "$code" != "0" ] && [ "$code" != "2" ]; then echo "::warning::수집 오류(코드 $code)"; git checkout -- latest.json || true
+            elif [ "$(sig)" = "$BEFORE" ]; then echo "$(date +%H:%M) 새 결과 없음"; git checkout -- latest.json
+            else
+              git add latest.json
+              git commit -q -m "실시간 결과 갱신 $(date '+%Y-%m-%d %H:%M')"
+              if git push -q origin HEAD:main; then gh workflow run deploy.yml --ref main && echo "$(date +%H:%M) 새 결과 반영·배포 요청"
+              else echo "푸시 충돌, 다음 회차에 다시"; fi
+            fi
+            if [ "$(finished)" = "yes" ]; then DONE_STREAK=$((DONE_STREAK+1)); else DONE_STREAK=0; fi
+            if [ "$DONE_STREAK" -ge 3 ]; then echo "오늘 경주 결과가 모두 들어왔습니다. 종료"; break; fi
+            if [ $(( $(date +%s) - START )) -ge 19800 ]; then gh workflow run live.yml --ref main; break; fi
+            sleep 240
+          done
